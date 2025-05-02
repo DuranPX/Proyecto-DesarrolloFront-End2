@@ -1,0 +1,215 @@
+/* Gobold Bold Italic */
+@font-face {
+    font-family: 'Gobold';
+    src: url('./assets/fonts/gobold/Gobold Bold Italic.otf') format('opentype'); /* Assuming .otf */
+    font-weight: bold; /* Or 700 */
+    font-style: italic;
+    font-display: swap;
+  }
+  
+  /* Gobold Bold */
+  @font-face {
+    font-family: 'Gobold';
+    src: url('./assets/fonts/gobold/Gobold Bold.otf') format('opentype'); /* Assuming .otf */
+    font-weight: bold; /* Or 700 */
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* Gobold CUTS Italic */
+  @font-face {
+    font-family: 'Gobold CUTS'; /* Or just 'Gobold' if you want to handle this as a style variant */
+    src: url('./assets/fonts/gobold/Gobold CUTS Italic.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal; /* Adjust if needed */
+    font-style: italic;
+    font-display: swap;
+  }
+  
+  /* Gobold CUTS */
+  @font-face {
+    font-family: 'Gobold CUTS'; /* Or just 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold CUTS.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal; /* Adjust if needed */
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* Gobold Extra1 Italic */
+  @font-face {
+    font-family: 'Gobold Extra1'; /* Or just 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold Extra1 Italic.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal; /* Adjust if needed */
+    font-style: italic;
+    font-display: swap;
+  }
+  
+  /* Gobold Extra1 */
+  @font-face {
+    font-family: 'Gobold Extra1'; /* Or just 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold Extra1.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal; /* Adjust if needed */
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* Gobold Extra2 Italic */
+  @font-face {
+    font-family: 'Gobold Extra2'; /* Or just 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold Extra2 Italic.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal; /* Adjust if needed */
+    font-style: italic;
+    font-display: swap;
+  }
+  
+  /* Gobold Extra2 */
+  @font-face {
+    font-family: 'Gobold Extra2'; /* Or just 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold Extra2.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal; /* Adjust if needed */
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* Gobold High Bold Italic */
+  @font-face {
+    font-family: 'Gobold High'; /* Or 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold High Bold Italic.otf') format('opentype'); /* Assuming .otf */
+    font-weight: bold; /* Or 700 */
+    font-style: italic;
+    font-display: swap;
+  }
+  
+  /* Gobold High Bold */
+  @font-face {
+    font-family: 'Gobold High'; /* Or 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold High Bold.otf') format('opentype'); /* Assuming .otf */
+    font-weight: bold; /* Or 700 */
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* Gobold High Italic */
+  @font-face {
+    font-family: 'Gobold High'; /* Or 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold High Italic.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+  }
+  
+  /* Gobold High Thin Italic */
+  @font-face {
+    font-family: 'Gobold High Thin'; /* Or 'Gobold High' */
+    src: url('./assets/fonts/gobold/Gobold High Thin Italic.otf') format('opentype'); /* Assuming .otf */
+    font-weight: 100; /* Assuming Thin corresponds to 100 */
+    font-style: italic;
+    font-display: swap;
+  }
+  
+  /* Gobold High Thin */
+  @font-face {
+    font-family: 'Gobold High Thin'; /* Or 'Gobold High' */
+    src: url('./assets/fonts/gobold/Gobold High Thin.otf') format('opentype'); /* Assuming .otf */
+    font-weight: 100; /* Assuming Thin corresponds to 100 */
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* Gobold High */
+  @font-face {
+    font-family: 'Gobold High'; /* Or 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold High.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* Gobold Hollow Bold Italic */
+  @font-face {
+    font-family: 'Gobold Hollow'; /* Or 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold Hollow Bold Italic.otf') format('opentype'); /* Assuming .otf */
+    font-weight: bold; /* Or 700 */
+    font-style: italic;
+    font-display: swap;
+  }
+  
+  /* Gobold Hollow Bold */
+  @font-face {
+    font-family: 'Gobold Hollow'; /* Or 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold Hollow Bold.otf') format('opentype'); /* Assuming .otf */
+    font-weight: bold; /* Or 700 */
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* Gobold Hollow Italic */
+  @font-face {
+    font-family: 'Gobold Hollow'; /* Or 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold Hollow Italic.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+  }
+  
+  /* Gobold Hollow */
+  @font-face {
+    font-family: 'Gobold Hollow'; /* Or 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold Hollow.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* Gobold Light Italic */
+  @font-face {
+    font-family: 'Gobold Light'; /* Or 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold Light Italic.otf') format('opentype'); /* Assuming .otf */
+    font-weight: 300; /* Assuming Light corresponds to 300 */
+    font-style: italic;
+    font-display: swap;
+  }
+  
+  /* Gobold Light */
+  @font-face {
+    font-family: 'Gobold Light'; /* Or 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold Light.otf') format('opentype'); /* Assuming .otf */
+    font-weight: 300; /* Assuming Light corresponds to 300 */
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* Gobold Lowplus Italic */
+  @font-face {
+    font-family: 'Gobold Lowplus'; /* Or 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold Lowplus Italic.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal; /* Adjust if needed */
+    font-style: italic;
+    font-display: swap;
+  }
+  
+  /* Gobold Lowplus */
+  @font-face {
+    font-family: 'Gobold Lowplus'; /* Or 'Gobold' */
+    src: url('./assets/fonts/gobold/Gobold Lowplus.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal; /* Adjust if needed */
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  /* Gobold Regular Italic */
+  @font-face {
+    font-family: 'Gobold';
+    src: url('./assets/fonts/gobold/Gobold Regular Italic.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal; /* Or 400 */
+    font-style: italic;
+    font-display: swap;
+  }
+  
+  /* Gobold Regular */
+  @font-face {
+    font-family: 'Gobold';
+    src: url('./assets/fonts/gobold/Gobold Regular.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal; /* Or 400 */
+    font-style: normal;
+    font-display: swap;
+  }
