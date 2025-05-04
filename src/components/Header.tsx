@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
@@ -12,8 +13,16 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
         {/* Icono de menú */}
         ☰
       </button>
-      <h1 className="text-xl font-semibold">Dashboard</h1>
       {/* Otros elementos del header */}
+      <div className="flex items-center gap-3 2xsm:gap-7">
+          <ul className="flex items-center gap-2 2xsm:gap-4">
+            <input type="text" name="" id="" placeholder='navbar' />
+            <p>notificaciones</p>
+            <p>perfil</p>
+          </ul>
+
+          
+        </div>
     </header>
   );
 };

@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 import Loader from './common/Loader';
+import routes from './routes/rutas'; // Importa tu array de rutas
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 const HomePage = lazy(() => import('./pages/Dashboard/homePage')); // Importa HomePage
@@ -24,8 +25,19 @@ function App() {
         containerClassName="overflow-auto"
       />
       <Routes>
-        <Route element={<DefaultLayout />}>
-          {/* La ruta index ahora renderiza HomePage */}
+        {routes.map((route, index) => (
+          <Route
+            key={index}
+            path={route.path}
+            element={
+              <Suspense fallback={<Loader />}>
+                <route.component />
+              </Suspense>
+            }
+          />
+        ))}
+        {/* Puedes mantener esta ruta si HomePage sigue siendo la página de inicio dentro del DefaultLayout */}
+        <Route path="/" element={<DefaultLayout />}>
           <Route index element={
             <Suspense fallback={<Loader />}>
               <HomePage />
