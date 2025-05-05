@@ -1,69 +1,30 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 
-interface SignInProps {}
-const Client_id_github="Ov23liIAQVbQXMdFEVwF";
+interface SignInProps { }
+const Client_id_github = "Ov23liIAQVbQXMdFEVwF";
 
 const SignIn: React.FC<SignInProps> = () => {
-  // Funciones para iniciar el flujo de OAuth con diferentes proveedores
-  const handleSignInWithGoogle = () => {
-    console.log('Iniciar sesión con Google');
-    // Aquí iría la lógica para redirigir al proveedor de Google
-    window.location.href = '/api/auth/google'; // Ejemplo de ruta del backend
-  };
-  
-  const handleSignInWithicrosoft = () => {
-    console.log('Iniciar sesión con Microsoft');
-    // Aquí iría la lógica para redirigir al proveedor de Facebook
-    window.location.href = "https://github.com/login/oauth/authorize?client_id="+ Client_id_github; // Ejemplo de ruta del backend
-  };
-  
+
   const handleSignInWithOtherGitHub = () => {
     console.log('Iniciar sesión con github');
-    // Lógica general para otros proveedores
-    window.location.href = "https://github.com/login/oauth/authorize?client_id="+ Client_id_github;
+    localStorage.setItem("provider", "github");
+    const redirectUri = encodeURIComponent(window.location.origin + "/signin"); // ¡Importante: la misma ruta!
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${Client_id_github}&redirect_uri=${redirectUri}&scope=user:email`;
   };
-  
-  useEffect(() => {
-    const querystring = window.location.search;
-    const urlparams = new URLSearchParams(querystring);
-    const codeParam = urlparams.get("code");
-    console.log(codeParam);
 
-    if (codeParam && localStorage.getItem("accesToken") === null) {
-      async function getAccessToken_github() {
-        await fetch("http://127.0.0.1:5000//oauth/github" + codeParam,{
-          method: "GET",
-        }).then((response) =>{
-          return response.json();
-        }).then((data)=> {
-          console.log(data);
-          if(data.access_token) {
-            localStorage.setItem("accessToken", data.access_token);
-          }
-        });
-      }
-      getAccessToken_github();
-    }
-      
-    injectStyles(); // Llama a la función para inyectar los estilos
-  }, []);
+
+  useEffect(() => {
+    injectStyles();
+  }, ); 
 
   return (
     <div className="container">
       <h2>Iniciar Sesión</h2>
 
       <div className="oauth-buttons">
-        <button className="google-button" onClick={handleSignInWithGoogle}>
-          <span className="icon"></span> {/* Icono de Google */}
-          <span>Continuar con Google</span>
-        </button>
-
-        <button className="microsoft-button" onClick={handleSignInWithicrosoft}>
-          <span className="icon"></span> {/* Icono de Microsoft */}
-          <span>Continuar con Microsoft</span>
-        </button>
-
+          <GoogleLogin onSuccess={(credentialResponse) => console.log(credentialResponse)} onError={() => console.log("fallo con login de google")} />
         <button className="github-button" onClick={handleSignInWithOtherGitHub}>
           <span className="icon"></span>
           <span>Continuar con GitHub</span>
@@ -225,7 +186,5 @@ const injectStyles = () => {
   style.textContent = styles;
   document.head.appendChild(style);
 };
-
-// injectStyles();
 
 export default SignIn;

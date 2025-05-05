@@ -10,52 +10,11 @@ from app.business.controllers.driver_controller import DriverController
 from app.business.controllers.shift_controller import ShiftController
 from app.business.controllers.issue_controller import IssueController
 from app.business.controllers.photo_controller import PhotoController
-from app.business.services.oauth.github_oauth import get_github_token, get_github_user_info
-from app.business.services.oauth.google_oauth import get_google_token, get_google_user_info
-from app.business.services.oauth.microsoft_oauth import get_microsoft_token, get_microsoft_user_info
 from flask import Flask, send_from_directory
 import os
 from flask import send_file, abort,send_from_directory
 from flask import current_app
 main_bp = Blueprint('main', __name__)
-
-# Oauth routes accessToken
-@main_bp.route('/oauth/github', methods=['POST'])
-async def github_login():
-    code = request.json.get("code")
-    token = await get_github_token(code)
-    return jsonify(token)
-
-@main_bp.route('/oauth/google', methods=['POST'])
-async def google_login():
-    code = request.json.get("code")
-    token = await get_google_token(code)
-    return jsonify(token)
-
-@main_bp.route('/oauth/microsoft', methods=['POST'])
-async def microsoft_login():
-    code = request.json.get("code")
-    token = await get_microsoft_token(code)
-    return jsonify(token)
-
-# Oauth routes User
-@main_bp.route('/oauth/github/user', methods=['GET'])
-async def github_login():
-    accessToken = request.json.get("accessToken")
-    token = await get_github_user_info(accessToken)
-    return jsonify(token)
-
-@main_bp.route('/oauth/google/user', methods=['GET'])
-async def google_login():
-    accessToken = request.json.get("accessToken")
-    token = await get_google_user_info(accessToken)
-    return jsonify(token)
-
-@main_bp.route('/oauth/microsoft/user', methods=['GET'])
-async def microsoft_login():
-    accessToken = request.json.get("acessToken")
-    token = await get_microsoft_user_info(accessToken)
-    return jsonify(token)
 
 # Restaurant routes
 @main_bp.route('/restaurants', methods=['GET'])
