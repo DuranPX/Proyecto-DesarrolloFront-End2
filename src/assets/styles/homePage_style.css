@@ -1,0 +1,59 @@
+@font-face {
+    font-family: 'Gobold';
+    src: url('./assets/fonts/gobold/Gobold Regular.otf') format('opentype'); /* Assuming .otf */
+    font-weight: normal; /* Or 400 */
+    font-style: normal;
+    font-display: swap;
+}
+
+.homepage_container {
+    background-color: #5b396b;
+    padding: 20px;
+}
+
+.homepage-title {
+    font-family: "Gobold Bold", sans-serif;;
+    font-size: 2.5rem;
+    color: black;
+}
+
+.historial-title {
+    font-family: "Gobold Bold", sans-serif;;
+    font-size: 1.5rem;
+    color: black;
+}
+
+.graph-title {
+    font-family: "Gobold Bold", sans-serif;;
+    font-size: 1.5rem;
+    color: black;
+}
+
+.graphs-container {
+    display: flex;
+    gap: 5rem;
+}
+
+.circular-graphs-container {
+    display: grid;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.bar-graphs-container {
+    display: grid;
+    justify-content: stretch;
+    align-items: stretch;
+    gap: 20px;
+    width: 100%;
+}
+
+.temp-series-graphs-container {
+    display: row;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
