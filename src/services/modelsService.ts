@@ -1,0 +1,60 @@
+import axios from 'axios';
+
+const getAllModel = async (API_BASE_URL: string) => {
+  try {
+    const response = await axios.get(API_BASE_URL);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener modelos (axios):', error);
+    throw error;
+  }
+};
+
+const getModelById = async (API_BASE_URL: string, id: number) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al obtener modelo con ID ${id} (axios):`, error);
+    throw error;
+  }
+};
+
+const createModel = async (API_BASE_URL: string, modelData: any) => {
+  try {
+    const response = await axios.post(API_BASE_URL, modelData);
+    return response.data;
+  } catch (error) {
+    console.error('Error al crear modelo (axios):', error);
+    throw error;
+  }
+};
+
+const updateModel = async (API_BASE_URL: string, id: number, modelData: any) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/${id}`, modelData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al actualizar modelo con ID ${id} (axios):`, error);
+    throw error;
+  }
+};
+
+const deleteModel = async (API_BASE_URL: string, id: number) => {
+  try {
+    const response = await axios.delete(`${API_BASE_URL}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al eliminar modelo con ID ${id} (axios):`, error);
+    throw error;
+  }
+};
+
+// Exporta las funciones que necesites (puedes elegir fetch o axios)
+export {
+  getAllModel,
+  getModelById,
+  createModel,
+  updateModel,
+  deleteModel,
+};

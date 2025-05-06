@@ -1,11 +1,21 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
+
+
 
 interface SignInProps { }
 const Client_id_github = "Ov23liIAQVbQXMdFEVwF";
 
 const SignIn: React.FC<SignInProps> = () => {
+
+  interface GoogleJwtPayload {
+    name: string;
+    email: string;
+    picture: string;
+    // puedes agregar más campos según lo que devuelva el token
+  }
 
   const handleSignInWithOtherGitHub = () => {
     console.log('Iniciar sesión con github');
@@ -17,14 +27,24 @@ const SignIn: React.FC<SignInProps> = () => {
 
   useEffect(() => {
     injectStyles();
-  }, ); 
+  },);
 
   return (
     <div className="container">
       <h2>Iniciar Sesión</h2>
 
       <div className="oauth-buttons">
-          <GoogleLogin onSuccess={(credentialResponse) => console.log(credentialResponse)} onError={() => console.log("fallo con login de google")} />
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              if (credentialResponse.credential) {
+                const decoded = jwtDecode<GoogleJwtPayload>(credentialResponse.credential);
+                console.log("Usuario:", decoded);
+              }
+            }}
+            onError={() => {
+              console.log('Error al iniciar sesión con Google');
+            }}
+          />
         <button className="github-button" onClick={handleSignInWithOtherGitHub}>
           <span className="icon"></span>
           <span>Continuar con GitHub</span>

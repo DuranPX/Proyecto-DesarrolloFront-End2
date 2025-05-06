@@ -31,7 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             </Link>
           </li>
           <li>
-            <Link to="/Restaurante" onClick={() => setSidebarOpen(false)} className="block py-2 text-gray-700 hover:bg-gray-300">
+            <Link to="/restaurantes" onClick={() => setSidebarOpen(false)} className="block py-2 text-gray-700 hover:bg-gray-300">
               Restaurantes
             </Link>
           </li>
