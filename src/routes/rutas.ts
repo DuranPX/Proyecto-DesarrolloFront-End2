@@ -2,6 +2,7 @@ import {lazy} from "react";
  
 const SignIn = lazy(() => import('../pages/Authentication/LogIn'));
 const restaurante = lazy(() => import("../components/ModelComponents/Restaurante"));
+const motorcycles = lazy(() => import("../components/ModelComponents/Motorcycle"));
 
 const coreRoutes = [
   //Autenticacion
@@ -31,6 +32,13 @@ const coreRoutes = [
       path: '/restaurantes',
       title: 'Restaurantes',
       component: restaurante,
+    }
+  // motorsaicles ruta
+  ,
+    {
+      path: '/Motocicletas',
+      title: 'Motocicletas',
+      component: motorcycles,
     }
 ];
 

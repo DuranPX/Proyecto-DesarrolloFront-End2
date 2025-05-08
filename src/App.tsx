@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import Loader from './common/Loader';
 import routes from './routes/rutas'; // Importa tu array de rutas
 const RestauranteComponent = lazy(() => import ("./components/ModelComponents/Restaurante"));
+const MotocicletaComponent = lazy(() => import ("./components/ModelComponents/Motorcycle"));
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 const HomePage = lazy(() => import('./pages/Dashboard/homePage')); // Importa HomePage
@@ -49,6 +50,13 @@ function App() {
           <Route index element={
             <Suspense fallback={<Loader />}>
               <RestauranteComponent />
+            </Suspense>
+          } />
+        </Route>
+        <Route path="/Motocicletas" element={<DefaultLayout />}>
+          <Route index element={
+            <Suspense fallback={<Loader />}>
+              <MotocicletaComponent/>
             </Suspense>
           } />
         </Route>
