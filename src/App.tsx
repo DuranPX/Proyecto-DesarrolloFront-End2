@@ -4,8 +4,7 @@ import { Toaster } from 'react-hot-toast';
 
 import Loader from './common/Loader';
 import routes from './routes/rutas'; // Importa tu array de rutas
-const RestauranteComponent = lazy(() => import ("./components/ModelComponents/Restaurante"));
-const MotocicletaComponent = lazy(() => import ("./components/ModelComponents/Motorcycle"));
+import SignIn from './pages/Authentication/SignIn';
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 const HomePage = lazy(() => import('./pages/Dashboard/homePage')); // Importa HomePage
@@ -26,39 +25,25 @@ function App() {
         reverseOrder={false}
         containerClassName="overflow-auto"
       />
+      
       <Routes>
-        {routes.map((route, index) => (
-          <Route
-            key={index}
-            path={route.path}
-            element={
-              <Suspense fallback={<Loader />}>
-                <route.component />
-              </Suspense>
-            }
-          />
-        ))}
-        {/* Puedes mantener esta ruta si HomePage sigue siendo la página de inicio dentro del DefaultLayout */}
-        <Route path="/" element={<DefaultLayout />}>
-          <Route index element={
-            <Suspense fallback={<Loader />}>
-              <HomePage />
-            </Suspense>
-          } />
-        </Route>
-        <Route path="/restaurantes" element={<DefaultLayout />}>
-          <Route index element={
-            <Suspense fallback={<Loader />}>
-              <RestauranteComponent />
-            </Suspense>
-          } />
-        </Route>
-        <Route path="/Motocicletas" element={<DefaultLayout />}>
-          <Route index element={
-            <Suspense fallback={<Loader />}>
-              <MotocicletaComponent/>
-            </Suspense>
-          } />
+        <Route path="/signin" element={<SignIn />} />
+        <Route element={<DefaultLayout />}>
+          <Route index element={<HomePage />} />
+          {routes.map((routes, index) => {
+            const { path, component: Component } = routes;
+            return (
+              <Route
+                key={index}
+                path={path}
+                element={
+                  <Suspense fallback={<Loader />}>
+                    <Component />
+                  </Suspense>
+                }
+              />
+            );
+          })}
         </Route>
       </Routes>
     </>

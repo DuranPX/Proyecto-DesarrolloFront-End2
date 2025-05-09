@@ -1,30 +1,20 @@
 import {lazy} from "react";
- 
-const SignIn = lazy(() => import('../pages/Authentication/LogIn'));
 const restaurante = lazy(() => import("../components/ModelComponents/Restaurante"));
 const motorcycles = lazy(() => import("../components/ModelComponents/Motorcycle"));
+const HomePage = lazy(() => import('../pages/Dashboard/homePage'));
 
 const coreRoutes = [
-  //Autenticacion
-    {
-      path: '/SignIn',
-      title: 'SignIn',
-      component: SignIn,
-    },
-    {
-      path: '/SignUp',
-      title: 'SignUp',
-      component: SignIn,
-    },
-    {
-      path: '/SignOut',
-      title: 'SignOut',
-      component: SignIn,
-    },
+  // HomePage Ruta
+  {
+    path: "/",
+    title:"Dashboard",
+    component: HomePage,
+  },
+  // Mapa Ruta
     {
       path: '/Visualizar-Mapa',
       title: 'Mapa',
-      component: SignIn,
+      component: restaurante,
     }
   //restaurante Ruta
   ,

@@ -206,16 +206,22 @@ const ModelCrudComponent = <T extends BaseModel,>({
                 <div>
                     <h2>Actualizar {modelNameSingular}</h2>
                     <form onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
-                        {modelFields.map(field => (
-                            <div key={String(field.key)}> {/* Cast to string for 'key' */}
-                                <label htmlFor={String(field.key)}>{field.label}:</label> {/* Cast to string for 'htmlFor' */}
-                                <input
-                                    type={field.type || 'text'}
-                                    id={String(field.key)}
-                                    name={String(field.key)}
-                                    onChange={handleInputChange}
-                                    required={!field.type || field.type !== 'email'}
-                                />
+                        {items.map(item => (
+                            <div key={item.id}>
+                                {modelFields.map(field => (
+                                    <div key={`${String(item.id)}-${String(field.key)}`}> {/* Key único para cada campo del item */}
+                                        <label htmlFor={`${String(item.id)}-${String(field.key)}`}>{field.label}:</label>
+                                        <input
+                                            type={field.type || 'text'}
+                                            id={`${String(item.id)}-${String(field.key)}`}
+                                            name={String(field.key)}
+                                            onChange={handleInputChange}
+                                            required={!field.type || field.type !== 'email'}
+                                            placeholder={field.label}
+                                            value={item[field.key]}
+                                        />
+                                    </div>
+                                ))}
                             </div>
                         ))}
                         <button type="submit" disabled={loading}>Actualizar</button>

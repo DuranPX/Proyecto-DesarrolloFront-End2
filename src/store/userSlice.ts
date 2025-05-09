@@ -1,43 +1,28 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Define la interfaz para el estado del usuario
-interface UserState {
-  name: string | null;
-  avatarUrl: string | null;
-  login: string | null;
-  // Puedes agregar otros campos relevantes del usuario de GitHub
+ export interface UserState {
+  name: string;
+  email: string;
+  picture: string;
+  provider: string;
 }
 
-// Define el estado inicial del usuario
-const initialState: UserState = {
-  name: null,
-  avatarUrl: null,
-  login: null,
-};
+const initialState: UserState | null = JSON.parse(localStorage.getItem("user") || "null");
 
-// Crea el slice del usuario
-export const userSlice = createSlice({
-  name: 'user', // Un nombre para identificar este slice
+const userSlice = createSlice({
+  name: "user",
   initialState,
   reducers: {
-    // Define las acciones que pueden modificar el estado del usuario
     setUser: (state, action: PayloadAction<UserState>) => {
-      state.name = action.payload.name;
-      state.avatarUrl = action.payload.avatarUrl;
-      state.login = action.payload.login;
-      // Actualiza otros campos si es necesario
+      localStorage.setItem("user", JSON.stringify(action.payload));
+      return action.payload;
     },
-    clearUser: (state) => {
-      state.name = null;
-      state.avatarUrl = null;
-      state.login = null;
-      // Limpia otros campos si es necesario
+    logout: () => {
+      localStorage.removeItem("user");
+      return null;
     },
   },
 });
 
-// Exporta las acciones generadas por createSlice
-export const { setUser, clearUser } = userSlice.actions;
-
-// Exporta el reducer del slice
+export const { setUser, logout } = userSlice.actions;
 export default userSlice.reducer;

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import cerrarIcon from "../assets/images/CloseSideBar.png";
+import LogoutButton from '../pages/Ui/LogOutButton';
+import { UserState } from '../store/userSlice';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -8,10 +10,24 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
+  const [userLoggedIn, setUserLoggedIn] = useState<boolean>(false);
+
+  const UpdaterLog = ()=> {
+    const storedUser = localStorage.getItem("user");
+    setUserLoggedIn(!!storedUser);
+    setSidebarOpen(false);
+  }
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    setUserLoggedIn(!!storedUser); // !! convierte un string (o null) a booleano
+  }, []);
+
   return (
     <aside
-      className={`fixed top-0 left-0 h-full w-64 bg-gray-200 transition-transform duration-300 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } z-20`}
+      className={`fixed top-0 left-0 h-full w-64 bg-gray-200 transition-transform duration-300 transform ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      } z-20`}
     >
       <div className="p-4">
         <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-400 focus:outline-none p-2">
@@ -41,7 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             </Link>
           </li>
           <li>
-            <Link to="/Motos" onClick={() => setSidebarOpen(false)} className="block py-2 text-gray-700 hover:bg-gray-300">
+            <Link to="/Motocicletas" onClick={() => setSidebarOpen(false)} className="block py-2 text-gray-700 hover:bg-gray-300">
               Motos
             </Link>
           </li>
@@ -60,11 +76,19 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
               Visualizar Mapa
             </Link>
           </li>
-          <li>
-            <Link to="/SignOut" onClick={() => setSidebarOpen(false)} className="block py-2 text-gray-700 hover:bg-gray-300">
-              Log out
-            </Link>
-          </li>
+          {userLoggedIn ? (
+            <li>
+              <Link to="/" onClick={() => UpdaterLog()}  className="block py-2 text-gray-700 hover:bg-gray-300">
+                <LogoutButton></LogoutButton>
+              </Link>
+            </li>
+          ) : (
+            <li>
+              <Link to="/signin" onClick={() => setSidebarOpen(false)} className="block py-2 text-gray-700 hover:bg-gray-300">
+                <button>Iniciar sesión</button>
+              </Link>
+            </li>
+          )}
         </ul>
       </div>
     </aside>

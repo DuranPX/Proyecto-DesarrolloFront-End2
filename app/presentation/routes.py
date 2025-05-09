@@ -14,7 +14,47 @@ from flask import Flask, send_from_directory
 import os
 from flask import send_file, abort,send_from_directory
 from flask import current_app
+##import de github route
+CLIENT_ID = "Ov23liIAQVbQXMdFEVwF"
+CLIENT_SECRET = "6cec5863978f56571a98c423ab5baa7eeae612a2"
+GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
+GITHUB_USER_URL = "https://api.github.com/user"
+## request
+import requests
 main_bp = Blueprint('main', __name__)
+
+# Github route
+@main_bp.route('/github', methods=['POST'])
+def github_auth():
+    code = request.json.get('code')
+    if not code:
+        return jsonify({"error": "No hay un codigo incluido"}), 400
+
+    #obtener access_token
+    token_res = requests.post(GITHUB_TOKEN_URL, data={
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+        'code': code,
+    }, headers={'Accept': 'application/json'})
+
+    token_json = token_res.json()
+    access_token = token_json.get('access_token')
+    if not access_token:
+        return jsonify({"error": "No se pudo obtener el access token"}), 400
+
+    #obtener datos del usuario (segun su configuarcion de privacidad se mostrara o no el email)
+    user_res = requests.get(GITHUB_USER_URL, headers={
+        'Authorization': f'token {access_token}',
+        'Accept': 'application/json'
+    })
+
+    user_json = user_res.json()
+    return jsonify({ # si estas husmeando te recomiendo no tocar nada jeje
+        'name': user_json.get('name'),
+        'email': user_json.get('email'),
+        'picture': user_json.get('avatar_url'),
+        'provider': 'github'
+    })
 
 # Restaurant routes
 @main_bp.route('/restaurants', methods=['GET'])
