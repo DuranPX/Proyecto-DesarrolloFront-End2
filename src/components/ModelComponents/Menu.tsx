@@ -27,7 +27,7 @@ interface Restaurant {
   phone: string;
 }
 
-interface Menu extends BaseModel{
+export interface Menu extends BaseModel{
   availability: boolean;
   created_at: string;
   id: number;
