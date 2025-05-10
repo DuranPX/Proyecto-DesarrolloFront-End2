@@ -360,3 +360,13 @@ def upload_photo():
 
     data = request.form.to_dict()
     return jsonify(PhotoController.create_with_file(data, file))
+
+##########Socket
+@main_bp.route("/motorcycles/track/<plate>", methods=["POST"])
+def start_tracking(plate):
+    result = MotorcycleController.start_tracking_by_plate(plate)
+    return jsonify(result)
+@main_bp.route("/motorcycles/stop/<plate>", methods=["POST"])
+def stop_tracking(plate):
+    result = MotorcycleController.stop_tracking_by_plate(plate)
+    return jsonify(result)
