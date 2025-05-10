@@ -5,7 +5,7 @@ from flask_cors import CORS
 app = create_app()
 
 # Configuración de CORS después de crear la aplicación
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+CORS(app)
 # O ajusta las rutas según tu necesidad
 
 if __name__ == '__main__':

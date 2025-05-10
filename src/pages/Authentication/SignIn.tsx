@@ -12,6 +12,7 @@ interface OauthJwtPayload {
 }
 
 const GITHUB_CLIENT_ID = "Ov23liIAQVbQXMdFEVwF";
+const MICROSOFT_CLIENT_ID = "ade20827-082b-4aa1-82c1-541e776fb3c1";
 
 const SignIn: React.FC = () => {
   const dispatch = useDispatch();
@@ -33,48 +34,79 @@ const SignIn: React.FC = () => {
 
   // Redirige al login de GitHub
   const handleGitHubLogin = () => {
+    localStorage.setItem("oauth_provider", "github");
     const redirectUri = encodeURIComponent(window.location.origin + "/signin");
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=read:user user:email`;
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}&scope=user`;
+  };
+
+  const handleMicrosoftLogin = () => {
+    localStorage.setItem("oauth_provider", "microsoft");
+    const redirectUri = encodeURIComponent(window.location.origin + "/signin");
+    const scope = encodeURIComponent("https://graph.microsoft.com/user.read");
+    window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${MICROSOFT_CLIENT_ID}&response_type=code&redirect_uri=${redirectUri}&response_mode=query&scope=${scope}`;
   };
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
 
-    if (code) {
-      const exchangeGitHubCode = async () => {
-        try {
-          const response = await fetch("http://127.0.0.1:5000/github", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ code }),
-          });
+  if (code) {
+    const provider = localStorage.getItem("oauth_provider");
 
-          if (!response.ok) {
-            throw new Error("Fallo al obtener datos de GitHub");
+    const exchangeCode = async () => {
+      try {
+        const endpoint =
+          provider === "microsoft"
+            ? "http://127.0.0.1:5000/microsoft"
+            : "http://127.0.0.1:5000/github";
+
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          // Solo aplica si el proveedor es Microsoft y el código expiró
+          if (
+            provider === "microsoft" &&
+            errorData?.error === "invalid_grant" &&
+            errorData?.error_description?.includes("The code has expired")
+          ) {
+            console.log("Código de Microsoft expirado. Iniciando nuevo login.");
+            localStorage.removeItem("oauth_provider"); // Limpieza preventiva
+            handleMicrosoftLogin();
+            return;
           }
+          throw new Error(`Error al intercambiar código de ${provider}`);
+        }
 
-          const userData = await response.json();
+        const userData = await response.json();
 
-          dispatch(setUser({
+        dispatch(
+          setUser({
             name: userData.name,
             email: userData.email,
             picture: userData.picture,
-            provider: "github",
-          }));
+            provider: provider || "unknown",
+          })
+        );
 
-          navigate("/");
+        localStorage.removeItem("oauth_provider");
+        navigate("/");
+      } catch (error) {
+        console.error("Error de login OAuth:", error);
+      } finally {
+        // Limpia la URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    };
 
-        } catch (error) {
-          console.error("Error en login con GitHub:", error);
-        }
-      };
+    exchangeCode();
+  }
+}, [dispatch, navigate]);
 
-      exchangeGitHubCode();
-    }
-  }, []);
 
 
   // Inyecta estilos al cargar el componente
@@ -92,6 +124,9 @@ const SignIn: React.FC = () => {
           <span className="icon" />
           <span>Continuar con GitHub</span>
         </button>
+        <button onClick={handleMicrosoftLogin}>
+          <span className='icon' />
+          Iniciar sesión con Microsoft</button>
       </div>
 
       <div className="separator"><span>O</span></div>

@@ -22,11 +22,11 @@ const Api_Url_Restaurantes = "http://127.0.0.1:5000/restaurants";
 
 const RestauranteComponent: React.FC = () => {
     const RestauranteFields = [
-        { label: 'name', key: 'name' as keyof Restaurante },
-        { label: 'address', key: 'address' as keyof Restaurante },
-        { label: 'phone', key: 'phone' as keyof Restaurante, type: 'number' },
+        { label: 'Nombre', key: 'name' as keyof Restaurante },
+        { label: 'Direccion', key: 'address' as keyof Restaurante },
+        { label: 'Telefono', key: 'phone' as keyof Restaurante, type: 'number' },
         { label: 'email', key: 'email' as keyof Restaurante },
-        { label: 'created at:', key: 'created_at' as keyof Restaurante}
+        { label: 'Creado el', key: 'created_at' as keyof Restaurante}
     ];
 
     return (

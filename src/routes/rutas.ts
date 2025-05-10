@@ -1,6 +1,8 @@
 import {lazy} from "react";
 const restaurante = lazy(() => import("../components/ModelComponents/Restaurante"));
 const motorcycles = lazy(() => import("../components/ModelComponents/Motorcycle"));
+const Menu = lazy(() => import("../components/ModelComponents/Menu"));
+
 const HomePage = lazy(() => import('../pages/Dashboard/homePage'));
 
 const coreRoutes = [
@@ -23,12 +25,18 @@ const coreRoutes = [
       title: 'Restaurantes',
       component: restaurante,
     }
-  // motorsaicles ruta
+  // motorcycles ruta
   ,
     {
       path: '/Motocicletas',
       title: 'Motocicletas',
       component: motorcycles,
+    }
+  ,
+    {
+      path: "/Menus",
+      title: "Menus",
+      component: Menu,
     }
 ];
 

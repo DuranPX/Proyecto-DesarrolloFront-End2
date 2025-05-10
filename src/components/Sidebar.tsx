@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             </Link>
           </li>
           <li>
-            <Link to="/Menu" onClick={() => setSidebarOpen(false)} className="block py-2 text-gray-700 hover:bg-gray-300">
+            <Link to="/Menus" onClick={() => setSidebarOpen(false)} className="block py-2 text-gray-700 hover:bg-gray-300">
               Menús
             </Link>
           </li>

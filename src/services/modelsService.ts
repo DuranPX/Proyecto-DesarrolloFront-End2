@@ -20,6 +20,16 @@ const getModelById = async (API_BASE_URL: string, id: number) => {
   }
 };
 
+const getModel_OfModelById = async (API_BASE_URL: string, F_Model: String,id: number, S_Model: String) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/${F_Model}/${id}/${S_Model}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al obtener modelo con info ${F_Model}/${id}/${S_Model} (axios):`, error);
+    throw error;
+  }
+};
+
 const createModel = async (API_BASE_URL: string, modelData: any) => {
   try {
     const response = await axios.post(API_BASE_URL, modelData);
@@ -54,6 +64,7 @@ const deleteModel = async (API_BASE_URL: string, id: number) => {
 export {
   getAllModel,
   getModelById,
+  getModel_OfModelById,
   createModel,
   updateModel,
   deleteModel,

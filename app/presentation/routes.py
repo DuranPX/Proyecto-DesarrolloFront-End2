@@ -12,16 +12,64 @@ from app.business.controllers.issue_controller import IssueController
 from app.business.controllers.photo_controller import PhotoController
 from flask import Flask, send_from_directory
 import os
+from dotenv import load_dotenv
 from flask import send_file, abort,send_from_directory
 from flask import current_app
-##import de github route
-CLIENT_ID = "Ov23liIAQVbQXMdFEVwF"
-CLIENT_SECRET = "6cec5863978f56571a98c423ab5baa7eeae612a2"
-GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
-GITHUB_USER_URL = "https://api.github.com/user"
+
 ## request
 import requests
 main_bp = Blueprint('main', __name__)
+##import de github route
+load_dotenv()
+
+CLIENT_ID_GITHUB = os.environ.get('GITHUB_CLIENT_ID')
+CLIENT_SECRET_GITHUB = os.environ.get('GITHUB_CLIENT_SECRET')
+GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
+GITHUB_USER_URL = "https://api.github.com/user"
+
+##env microsoft
+MICROSOFT_TOKEN_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
+MICROSOFT_USER_URL = "https://graph.microsoft.com/v1.0/me"
+MICROSOFT_CLIENT_ID = "ade20827-082b-4aa1-82c1-541e776fb3c1"
+MICROSOFT_CLIENT_SECRET = "98bbc321-c39d-4fc2-ad62-05d458e69455"
+MICROSOFT_REDIRECT_URI = "http://localhost:5173/signin"
+
+# Microsoft Route
+@main_bp.route('/microsoft', methods=['POST'])
+def microsoft_auth():
+    print("JSON recibido:", request.get_json())
+    data = request.get_json()
+    code = data.get("code")
+    if not code:
+        return jsonify({"error": "Code not provided"}), 400
+    
+    token_res = requests.post(MICROSOFT_TOKEN_URL, data={
+        'client_id': "ade20827-082b-4aa1-82c1-541e776fb3c1",
+        'client_secret': "FR28Q~3kkzAmGI2.DpjuR1On5zq6OQHXAnmObadb",
+        'code': code,
+        'grant_type': 'authorization_code',
+        'redirect_uri': "http://localhost:5173/signin"
+    })
+
+    if token_res.status_code != 200:
+        print("Microsoft token response:", token_res.text)
+        return jsonify({"error": "Failed to obtain token"}), 400
+
+    access_token = token_res.json().get("access_token")
+
+    user_res = requests.get(MICROSOFT_USER_URL, headers={
+        "Authorization": f"Bearer {access_token}"
+    })
+
+    if user_res.status_code != 200:
+        return jsonify({"error": "Failed to fetch user info"}), 400
+
+    user_data = user_res.json()
+    return jsonify({
+        "name": user_data.get("displayName"),
+        "email": user_data.get("userPrincipalName"),
+        "picture": "",  # Microsoft Graph no da foto por defecto
+    })
 
 # Github route
 @main_bp.route('/github', methods=['POST'])
@@ -32,8 +80,8 @@ def github_auth():
 
     #obtener access_token
     token_res = requests.post(GITHUB_TOKEN_URL, data={
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
+        'client_id': CLIENT_ID_GITHUB,
+        'client_secret': CLIENT_SECRET_GITHUB,
         'code': code,
     }, headers={'Accept': 'application/json'})
 
@@ -55,6 +103,11 @@ def github_auth():
         'picture': user_json.get('avatar_url'),
         'provider': 'github'
     })
+
+# Restaurante-menu Route
+@main_bp.route('/restaurants/<int:restaurant_id>/menus', methods=['GET'])
+def get_restaurant_menus(restaurant_id):
+    return jsonify(MenuController.get_by_restaurant_id(restaurant_id))
 
 # Restaurant routes
 @main_bp.route('/restaurants', methods=['GET'])

@@ -58,6 +58,10 @@ const ModelCrudComponent = <T extends BaseModel,>({
         }
     };
 
+    const getValueByPath = (obj: any, path: string): any => {
+        return path.split('.').reduce((o, k) => (o && typeof o === 'object' && k in o) ? o[k] : undefined, obj);
+    };
+
     const handleCreate = async () => {
         setLoading(true);
         setError(null);
@@ -207,22 +211,24 @@ const ModelCrudComponent = <T extends BaseModel,>({
                     <h2>Actualizar {modelNameSingular}</h2>
                     <form onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
                         {items.map(item => (
-                            <div key={item.id}>
-                                {modelFields.map(field => (
-                                    <div key={`${String(item.id)}-${String(field.key)}`}> {/* Key único para cada campo del item */}
-                                        <label htmlFor={`${String(item.id)}-${String(field.key)}`}>{field.label}:</label>
-                                        <input
-                                            type={field.type || 'text'}
-                                            id={`${String(item.id)}-${String(field.key)}`}
-                                            name={String(field.key)}
-                                            onChange={handleInputChange}
-                                            required={!field.type || field.type !== 'email'}
-                                            placeholder={field.label}
-                                            value={item[field.key]}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
+                            item.id === actualizarId && (
+                                <div key={item.id}>
+                                    {modelFields.map(field => (
+                                        <div key={`${String(item.id)}-${String(field.key)}`}>
+                                            <label htmlFor={`${String(item.id)}-${String(field.key)}`}>{field.label}:</label>
+                                            <input
+                                                type={field.type || 'text'}
+                                                id={`${String(item.id)}-${String(field.key)}`}
+                                                name={String(field.key)}
+                                                onChange={handleInputChange}
+                                                required={!field.type || field.type !== 'email'}
+                                                placeholder={field.label}
+                                                defaultValue={getValueByPath(item, String(field.key))}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )
                         ))}
                         <button type="submit" disabled={loading}>Actualizar</button>
                         <button onClick={() => setActualizarId(null)}>Cancelar</button>
@@ -247,7 +253,15 @@ const ModelCrudComponent = <T extends BaseModel,>({
                     <ul>
                         {modelFields.map(field => (
                             <li key={`${String(item.id)}-${String(field.key)}`}>
-                                <strong>{field.label}:</strong> {item[field.key]}
+                                <strong>{field.label}:</strong> {
+                                    field.key === 'availability' ? (
+                                        getValueByPath(item, String(field.key)) ? 'Sí' : 'No'
+                                    ) : (
+                                        getValueByPath(item, String(field.key)) && typeof getValueByPath(item, String(field.key)) === 'object' && getValueByPath(item, String(field.key)) !== null ?
+                                            JSON.stringify(getValueByPath(item, String(field.key))) :
+                                            getValueByPath(item, String(field.key))
+                                    )
+                                }
                             </li>
                         ))}
                     </ul>

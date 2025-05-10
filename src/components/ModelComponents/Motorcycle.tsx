@@ -22,11 +22,11 @@ const Api_Url_Motocicletas = "http://127.0.0.1:5000/motorcycles";
 
 const MotocicletaComponent: React.FC = () => {
     const motocicletaFields = [
-        { label: 'license plate', key: 'license_plate' as keyof Motocicleta },
-        { label: 'brand', key: 'brand' as keyof Motocicleta },
-        { label: 'year', key: 'year' as keyof Motocicleta, type: 'number' },
-        { label: 'status', key: 'status' as keyof Motocicleta },
-        { label: 'created at:', key: 'created_at' as keyof Motocicleta}
+        { label: 'Licencia', key: 'license_plate' as keyof Motocicleta },
+        { label: 'Marca', key: 'brand' as keyof Motocicleta },
+        { label: 'Año', key: 'year' as keyof Motocicleta, type: 'number' },
+        { label: 'Estado', key: 'status' as keyof Motocicleta },
+        { label: 'Creado el', key: 'created_at' as keyof Motocicleta}
     ];
 
     return (

@@ -14,6 +14,11 @@ class MenuController:
         return menu.to_dict()
     
     @staticmethod
+    def get_by_reaturant_id(restaurant_id):
+        menus = Menu.query.filter_by(restaurant_id=restaurant_id).all()
+        return [menu.to_dict() for menu in menus]
+    
+    @staticmethod
     def create(data):
         new_menu = Menu(
             restaurant_id=data.get('restaurant_id'),

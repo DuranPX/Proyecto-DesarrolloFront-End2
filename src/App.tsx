@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 import Loader from './common/Loader';
-import routes from './routes/rutas'; // Importa tu array de rutas
+import routes from './routes/rutas'; 
 import SignIn from './pages/Authentication/SignIn';
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
@@ -38,7 +38,7 @@ function App() {
                 path={path}
                 element={
                   <Suspense fallback={<Loader />}>
-                    <Component />
+                    <Component/>
                   </Suspense>
                 }
               />
