@@ -9,7 +9,7 @@ import {
     deleteModel as deleteRestaurante,
 } from '../../services/modelsService';
 
-interface Restaurante extends BaseModel {
+export interface Restaurante extends BaseModel {
     id: number;
     name: string;
     address: string;

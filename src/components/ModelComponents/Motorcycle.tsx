@@ -9,7 +9,7 @@ import {
     deleteModel as deleteMotocicleta,
 } from '../../services/modelsService';
 
-interface Motocicleta extends BaseModel {
+export interface Motocicleta extends BaseModel {
     id: number;
     license_plate: string;
     brand: string;
