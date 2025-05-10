@@ -3,6 +3,7 @@ const restaurante = lazy(() => import("../components/ModelComponents/Restaurante
 const motorcycles = lazy(() => import("../components/ModelComponents/Motorcycle"));
 const Menu = lazy(() => import("../components/ModelComponents/Menu"));
 
+const Driver = lazy(() => import("../components/ModelComponents/Driver"));
 const HomePage = lazy(() => import('../pages/Dashboard/homePage'));
 
 const coreRoutes = [
@@ -38,6 +39,15 @@ const coreRoutes = [
       title: "Menus",
       component: Menu,
     }
+  ,
+
+    //Drives ruta
+    {
+      path: "/Drivers",
+      title: "Drivers",
+      component: Driver,
+    }
+
 ];
 
 const routes = [...coreRoutes];
