@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Header from "../../src/components/Header";
 import Sidebar from '../../src/components/Sidebar';
+import Footer from '../components/Footer';
 
 import { Outlet } from 'react-router-dom';
 
@@ -28,6 +29,9 @@ const DefaultLayout = () => {
             </div>
           </main>
           {/* */}
+          <div>
+            <Footer></Footer>
+          </div>
         </div>
         {/* */}
       </div>

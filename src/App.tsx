@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import Loader from './common/Loader';
 import routes from './routes/rutas'; 
