@@ -1,4 +1,5 @@
 import React from 'react';
+import DropdownUser from './DropdownUser';
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -20,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
             <p>Notificaciones</p>
           </ul>
           {/* User Area*/}
+          <DropdownUser></DropdownUser>
           {/* User Area*/} 
       </div>
     </header>
