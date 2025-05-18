@@ -1,3 +1,4 @@
+import { secureAxios } from './securityService'; // <-- usa el seguro
 import axios from 'axios';
 
 const getAllModel = async (API_BASE_URL: string) => {
@@ -20,7 +21,7 @@ const getModelById = async (API_BASE_URL: string, id: number) => {
   }
 };
 
-const getModel_OfModelById = async (API_BASE_URL: string, F_Model: String,id: number, S_Model: String) => {
+const getModel_OfModelById = async (API_BASE_URL: string, F_Model: string, id: number, S_Model: string) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/${F_Model}/${id}/${S_Model}`);
     return response.data;
@@ -32,7 +33,7 @@ const getModel_OfModelById = async (API_BASE_URL: string, F_Model: String,id: nu
 
 const createModel = async (API_BASE_URL: string, modelData: any) => {
   try {
-    const response = await axios.post(API_BASE_URL, modelData);
+    const response = await secureAxios.post(API_BASE_URL, modelData);
     return response.data;
   } catch (error) {
     console.error('Error al crear modelo (axios):', error);
@@ -42,7 +43,7 @@ const createModel = async (API_BASE_URL: string, modelData: any) => {
 
 const updateModel = async (API_BASE_URL: string, id: number, modelData: any) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/${id}`, modelData);
+    const response = await secureAxios.put(`${API_BASE_URL}/${id}`, modelData);
     return response.data;
   } catch (error) {
     console.error(`Error al actualizar modelo con ID ${id} (axios):`, error);
@@ -52,7 +53,7 @@ const updateModel = async (API_BASE_URL: string, id: number, modelData: any) => 
 
 const deleteModel = async (API_BASE_URL: string, id: number) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/${id}`);
+    const response = await secureAxios.delete(`${API_BASE_URL}/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error al eliminar modelo con ID ${id} (axios):`, error);

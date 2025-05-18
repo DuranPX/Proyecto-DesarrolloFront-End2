@@ -14,6 +14,13 @@ class CustomerController:
         return customer.to_dict()
     
     @staticmethod
+    def get_by_email(email):
+        customer = Customer.query.filter_by(email=email).first()
+        if customer:
+            return customer.to_dict()
+        return None
+    
+    @staticmethod
     def create(data):
         new_customer = Customer(
             name=data.get('name'),

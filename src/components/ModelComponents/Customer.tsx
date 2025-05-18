@@ -38,6 +38,7 @@ const CustomerComponent: React.FC = () => {
             createData={createCustomer}
             updateData={updateCustomer}
             deleteData={deleteCustomer}
+            auxData={''}
         />
     );
 };

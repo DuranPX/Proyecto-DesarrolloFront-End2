@@ -1,15 +1,17 @@
 import {lazy} from "react";
+
 const restaurante = lazy(() => import("../components/ModelComponents/Restaurante"));
 const motorcycles = lazy(() => import("../components/ModelComponents/Motorcycle"));
 const Menu = lazy(() => import("../components/ModelComponents/Menu"));
 const Customers = lazy(() => import("../components/ModelComponents/Customer"));
-const Order = lazy(() => import("../components/ModelComponents/Order"));
+const ListaOrder = lazy(() => import("../components/ModelComponents/Order"));
 const Adress = lazy(() => import("../components/ModelComponents/Adress"));
 const Issue = lazy(() => import("../components/ModelComponents/Issue"));
 const Photo = lazy(() => import("../components/ModelComponents/Photo"));
 const Driver = lazy(() => import("../components/ModelComponents/Driver"));
-const HomePage = lazy(() => import('../pages/Dashboard/homePage'));
 const Product = lazy(() => import("../components/ModelComponents/Product"));
+const Turno = lazy(() => import("../components/ModelComponents/Shift"));
+const HomePage = lazy(() => import('../pages/Dashboard/homePage'));
 const Profile = lazy(() => import("../components/UserSignIn/UserRender"));
 
 
@@ -27,6 +29,14 @@ const coreRoutes = [
       component: restaurante,
     }
   //restaurante Ruta
+  ,
+    {
+      path: '/restaurants/:restaurant_id/menus',
+      title: 'MenuById',
+      component: Menu,
+    }
+
+  //restaurantes Ruta
   ,
     {
       path: '/restaurantes',
@@ -61,7 +71,14 @@ const coreRoutes = [
     {
       path: "/Pedidos",
       title: "Pedidos",
-      component: Order,
+      component: ListaOrder,
+    }
+  // Pedidos Ruta  
+  ,
+    {
+      path: "/pedidos/:menu_id/menu",
+      title: "Pedidos",
+      component: ListaOrder,
     }
   // Clientes Ruta
   ,
@@ -87,8 +104,8 @@ const coreRoutes = [
   ,
   // Asuntos Ruta
     {
-      path: "/Asuntos",
-      title: "Asuntos",
+      path: "/Inconveniente",
+      title: "Inconveniente",
       component: Issue,
     }
   ,
@@ -97,6 +114,13 @@ const coreRoutes = [
       path: "/Productos",
       title: "Productos",
       component: Product,
+    }
+  ,
+  // Productos Ruta
+    {
+      path: "/turnos",
+      title: "Productos",
+      component: Turno,
     }
   ,
   // Perfil Ruta

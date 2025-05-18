@@ -19,7 +19,7 @@ export interface Photo extends BaseModel {
     created_at: Date;
 }
 
-const Api_Url_Photos = "http://127.0.0.1:5000/fotos";
+const Api_Url_Photos = "http://127.0.0.1:5000/photos";
 const PhotoComponent: React.FC = () => {
     const photoFields = [
         { label: 'ID', key: 'id' as keyof Photo },
