@@ -1,63 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
+import axios from 'axios';
 
-interface ChartState {
-    series: number[];
-    options: any;
-}
+const CircularChartOne = () => {
+  const [chartData, setChartData] = useState<any>(null);
 
-const CircularChartOne: React.FC = () => {
-    const [state] = React.useState<ChartState>({
-        series: [36, 55, 18, 27, 20],
-        options: {
-            chart: {
-                width: 380,
-                type: 'donut',
-            },
-            plotOptions: {
-                pie: {
-                    startAngle: -90,
-                    endAngle: 270
-                }
-            },
-            dataLabels: {
-                enabled: false
-            },
-            fill: {
-                type: 'gradient',
-            },
-            legend: {
-                formatter: function (val: string, opts: any) {
-                    return val + " - " + opts.w.globals.series[opts.seriesIndex];
-                }
-            },
-            title: {
-                text: 'Gradient Donut with custom Start-angle'
-            },
-            responsive: [{
-                breakpoint: 480,
-                options: {
-                    chart: {
-                        width: 200
-                    },
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }]
-        },
-    });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://0ae556e6-5b9a-456f-b3b7-c93463cd36d1.mock.pstmn.io/chart-data/1');
+        
+        // Convertir el string de formatter a función real
+        const processedOptions = {
+          ...response.data.options,
+          legend: {
+            ...response.data.options.legend,
+            formatter: function(val: string, opts: any) {
+              return `${val} - ${opts.w.globals.series[opts.seriesIndex]}`;
+            }
+          }
+        };
 
-    return (
-        <div id="chart">
-            <ReactApexChart
-                options={state.options}
-                series={state.series}
-                type="donut"
-                width={380}
-            />
-        </div>
-    );
+        setChartData({
+          series: response.data.series,
+          options: processedOptions
+        });
+
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (!chartData) return <div>Cargando gráfica...</div>;
+
+  return (
+    <div id="chart">
+      <ReactApexChart
+        options={chartData.options}
+        series={chartData.series}
+        type="donut"
+        width={380}
+      />
+    </div>
+  );
 };
 
 export default CircularChartOne;

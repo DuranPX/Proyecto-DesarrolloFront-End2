@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import type { ApexOptions } from 'apexcharts';
 
-// Definición de tipo para los datos
 interface ChartData {
   x: Date | string;
   y: number;
@@ -16,104 +15,51 @@ interface ChartState {
   options: ApexOptions;
 }
 
-// Ejemplo de datos - reemplaza con tus fechas reales
-const sampleDates: ChartData[] = [
-  { x: '2023-01-01', y: 2300000 },
-  { x: '2023-01-02', y: 2100000 },
-  { x: '2023-01-03', y: 1800000 },
-  { x: '2023-01-04', y: 1900000 },
-  { x: '2023-01-05', y: 2050000 },
-];
-
 const TempSeriesChartTwo: React.FC = () => {
-  const [state] = React.useState<ChartState>({
-    series: [{
-      name: 'XYZ MOTORS',
-      data: sampleDates // Usa tus datos reales aquí
-    }],
-    options: {
-      chart: {
-        type: 'area',
-        stacked: false,
-        height: 350,
-        zoom: {
-          type: 'x',
-          enabled: true,
-          autoScaleYaxis: true
-        },
-        toolbar: {
-          autoSelected: 'zoom'
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      markers: {
-        size: 0,
-      },
-      title: {
-        text: 'Stock Price Movement',
-        align: 'left',
-        style: {
-          fontSize: '16px',
-          fontWeight: 'bold'
-        }
-      },
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shadeIntensity: 1,
-          inverseColors: false,
-          opacityFrom: 0.5,
-          opacityTo: 0,
-          stops: [0, 90, 100]
-        },
-      },
-      yaxis: {
-        labels: {
-          formatter: function(val: number) {
-            return (val / 1000000).toFixed(0) + 'M';
-          },
-        },
-        title: {
-          text: 'Price (in millions)',
-          style: {
-            fontSize: '12px'
-          }
-        },
-      },
-      xaxis: {
-        type: 'datetime',
-        labels: {
-          datetimeFormatter: {
-            year: 'yyyy',
-            month: 'MMM \'yy',
-            day: 'dd MMM',
-            hour: 'HH:mm'
-          }
-        }
-      },
-      tooltip: {
-        shared: false,
-        x: {
-          format: 'dd MMM yyyy'
-        },
-        y: {
-          formatter: function(val: number) {
-            return '$' + (val / 1000000).toFixed(2) + 'M';
-          }
-        }
-      },
-      stroke: {
-        curve: 'smooth',
-        width: 2
-      },
-      grid: {
-        borderColor: '#f1f1f1',
-        strokeDashArray: 3
-      }
-    }
+  const [state, setState] = useState<ChartState>({
+    series: [],
+    options: {}
   });
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        const response = await fetch('https://0ae556e6-5b9a-456f-b3b7-c93463cd36d1.mock.pstmn.io/chart-data/8');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        
+        // Convertir las funciones de string a funciones reales
+        if (data.chartData.options.yaxis?.labels?.formatter) {
+          data.chartData.options.yaxis.labels.formatter = new Function(
+            'val', 
+            data.chartData.options.yaxis.labels.formatter.replace('function(val) ', '')
+          );
+        }
+        
+        if (data.chartData.options.tooltip?.y?.formatter) {
+          data.chartData.options.tooltip.y.formatter = new Function(
+            'val', 
+            data.chartData.options.tooltip.y.formatter.replace('function(val) ', '')
+          );
+        }
+
+        setState(data.chartData);
+        setLoading(false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        setLoading(false);
+      }
+    };
+
+    fetchChartData();
+  }, []);
+
+  if (loading) return <div>Loading chart data...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="bg-white p-4 rounded-lg shadow">

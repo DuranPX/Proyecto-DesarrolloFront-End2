@@ -1,72 +1,47 @@
-import React from 'react'; // React ahora está siendo utilizado
+import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import type { ApexOptions } from 'apexcharts';
+import axios from 'axios';
 
 const BarChartThree: React.FC = () => {
-  const colors = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', '#00D9E9', '#FF66C3', '#546E7A'];
+  const [chartConfig, setChartConfig] = useState<any>(null);
 
-  const options: ApexOptions = {
-    chart: {
-      type: 'bar',
-      height: 350,
-      toolbar: { 
-        show: false 
-      },
-    },
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        columnWidth: '55%',
-        distributed: true,
-        borderRadius: 4,
-      },
-    },
-    colors: colors,
-    series: [{
-      name: 'Valores',
-      data: [21, 22, 10, 28, 16, 21, 13, 30]
-    }],
-    xaxis: {
-      categories: [
-        ['Isa', 'Cardona'],
-        ['Mario', 'Lopez'],
-        ['Pedro', 'Perez'],
-        'Amber',
-        ['Sara', 'Delgado'],
-        ['Luis', 'Diaz'],
-        ['David', 'Solorza'],
-        ['Lily', 'Roberts'],
-      ],
-      labels: {
-        style: {
-          colors: colors,
-          fontSize: '12px',
-          fontWeight: 600,
-        },
-      },
-    },
-    yaxis: {
-      title: {
-        text: 'Valores',
-      },
-    },
-    tooltip: {
-      y: {
-        formatter: (val: number) => `${val} unidades`,
-      },
-    },
-  };
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        const response = await axios.get('https://0ae556e6-5b9a-456f-b3b7-c93463cd36d1.mock.pstmn.io/chart-data/6');
+        
+        // Convertir el string de formatter a función real
+        const processedData = {
+          ...response.data,
+          tooltip: {
+            ...response.data.tooltip,
+            y: {
+              formatter: (val: number) => `${val} unidades`
+            }
+          }
+        };
+
+        setChartConfig(processedData);
+      } catch (error) {
+        console.error('Error al cargar datos del servidor:', error);
+      }
+    };
+
+    fetchChartData();
+  }, []);
+
+  if (!chartConfig) {
+    return <div className="bg-white p-4 rounded-lg shadow">Cargando gráfica...</div>;
+  }
 
   return (
     <div className="bg-white p-4 rounded-lg shadow">
-      <div id="chart">
-        <ReactApexChart 
-          options={options} 
-          series={options.series} 
-          type="bar" 
-          height={350} 
-        />
-      </div>
+      <ReactApexChart
+        options={chartConfig}
+        series={chartConfig.series}
+        type="bar"
+        height={chartConfig.chart.height}
+      />
     </div>
   );
 };

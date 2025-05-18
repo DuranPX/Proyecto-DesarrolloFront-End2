@@ -11,6 +11,7 @@ const Driver = lazy(() => import("../components/ModelComponents/Driver"));
 const HomePage = lazy(() => import('../pages/Dashboard/homePage'));
 const Product = lazy(() => import("../components/ModelComponents/Product"));
 const Profile = lazy(() => import("../components/UserSignIn/UserRender"));
+const MapTracker = lazy(() => import("../components/MapTracker"));
 
 
 const coreRoutes = [
@@ -24,7 +25,7 @@ const coreRoutes = [
     {
       path: '/Visualizar-Mapa',
       title: 'Mapa',
-      component: restaurante,
+      component: MapTracker,
     }
   //restaurante Ruta
   ,
