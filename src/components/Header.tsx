@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import DropdownUser from './DropdownUser';
+import logoLarge from "../assets/images/Logo-Large-Devlivery.png";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -14,7 +15,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
         {/* Icono de menú */}
         ☰
       </button>
-      <Link to='/'  className=''>DEVLIVERY</Link>
+      <Link to='/'  className=''><img src={logoLarge} alt="Logo de la pagina" className='w-12' /></Link>
       {/* Otros elementos del header */}
       <div className="flex items-center gap-3 2xsm:gap-7">
           <ul className="flex items-center gap-2 2xsm:gap-4">

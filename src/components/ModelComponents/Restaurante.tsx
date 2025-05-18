@@ -40,6 +40,8 @@ const RestauranteComponent: React.FC = () => {
             createData={createRestaurante}
             updateData={updateRestaurante}
             deleteData={deleteRestaurante}
+            redirectUrlBuilder={(item) => `/restaurants/${item.id}/menus`}
+            auxData={null}
         />
     );
 };

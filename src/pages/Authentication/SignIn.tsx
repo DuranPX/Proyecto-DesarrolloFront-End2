@@ -3,7 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
+import type { AppDispatch } from '../../store/store'; // importa tu tipo
 import { setUser } from '../../store/userSlice'; // Ajusta según tu estructura
+import { createCustomerOnLogin } from '../../services/CustomerService'; // Importa la función
+import { hasRequiredUserData } from '../../services/CustomerService'; // Importa la función
 
 interface OauthJwtPayload {
   name: string;
@@ -15,20 +18,28 @@ const GITHUB_CLIENT_ID = "Ov23liIAQVbQXMdFEVwF";
 const MICROSOFT_CLIENT_ID = "ade20827-082b-4aa1-82c1-541e776fb3c1";
 
 const SignIn: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   // Manejar login con Google
   const handleGoogleSuccess = (credentialResponse: any) => {
     if (credentialResponse.credential) {
       const decoded = jwtDecode<OauthJwtPayload>(credentialResponse.credential);
-      dispatch(setUser({
+      const userData = {
         name: decoded.name,
         email: decoded.email,
         picture: decoded.picture,
         provider: "google",
-      }));
-      navigate("/"); // Redirige después de iniciar sesión
+        token: credentialResponse.credential,
+      };
+      if (!hasRequiredUserData(userData)) {
+        dispatch(setUser(userData));
+        navigate("/perfil");
+        return;
+      }
+      dispatch(setUser(userData));
+      dispatch(createCustomerOnLogin(userData));
+      navigate("/");
     }
   };
 
@@ -47,67 +58,67 @@ const SignIn: React.FC = () => {
   };
 
   useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
 
-  if (code) {
-    const provider = localStorage.getItem("oauth_provider");
+    if (code) {
+      const provider = localStorage.getItem("oauth_provider");
 
-    const exchangeCode = async () => {
-      try {
-        const endpoint =
-          provider === "microsoft"
-            ? "http://127.0.0.1:5000/microsoft"
-            : "http://127.0.0.1:5000/github";
+      const exchangeCode = async () => {
+        try {
+          const endpoint =
+            provider === "microsoft"
+              ? "http://127.0.0.1:5000/microsoft"
+              : "http://127.0.0.1:5000/github";
 
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code }),
-        });
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code }),
+          });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          // Solo aplica si el proveedor es Microsoft y el código expiró
-          if (
-            provider === "microsoft" &&
-            errorData?.error === "invalid_grant" &&
-            errorData?.error_description?.includes("The code has expired")
-          ) {
-            console.log("Código de Microsoft expirado. Iniciando nuevo login.");
-            localStorage.removeItem("oauth_provider"); // Limpieza preventiva
-            handleMicrosoftLogin();
-            return;
+          if (!response.ok) {
+            const errorData = await response.json();
+            if (
+              provider === "microsoft" &&
+              errorData?.error === "invalid_grant" &&
+              errorData?.error_description?.includes("The code has expired")
+            ) {
+              console.log("Código de Microsoft expirado. Iniciando nuevo login.");
+              localStorage.removeItem("oauth_provider");
+              handleMicrosoftLogin();
+              return;
+            }
+            throw new Error(`Error al intercambiar código de ${provider}`);
           }
-          throw new Error(`Error al intercambiar código de ${provider}`);
-        }
 
-        const userData = await response.json();
-
-        dispatch(
-          setUser({
+          const userData = await response.json();
+          const userPayload = {
             name: userData.name,
             email: userData.email,
-            picture: userData.picture,
+            picture: userData.picture || userData.avatar_url || "", // Soporta ambos campos
             provider: provider || "unknown",
-          })
-        );
+            token: userData.token,
+          };
+          dispatch(setUser(userPayload));
+          if (!hasRequiredUserData(userPayload)) {
+            localStorage.removeItem("oauth_provider");
+            navigate("/perfil");
+            return;
+          }
+          dispatch(createCustomerOnLogin(userPayload));
+          localStorage.removeItem("oauth_provider");
+          navigate("/");
+        } catch (error) {
+          console.error("Error de login OAuth:", error);
+        } finally {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      };
 
-        localStorage.removeItem("oauth_provider");
-        navigate("/");
-      } catch (error) {
-        console.error("Error de login OAuth:", error);
-      } finally {
-        // Limpia la URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-    };
-
-    exchangeCode();
-  }
-}, [dispatch, navigate]);
-
-
+      exchangeCode();
+    }
+  }, [dispatch, navigate]);
 
   // Inyecta estilos al cargar el componente
   useEffect(() => {
@@ -152,95 +163,95 @@ const SignIn: React.FC = () => {
 
 // Estilos CSS inyectados dinámicamente
 const styles = `
-  .container {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 350px;
-    margin: auto;
-  }
+    .container {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 350px;
+        margin: auto;
+    }
 
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
 
-  .oauth-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
+    .oauth-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
 
-  .oauth-buttons button {
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    background: #f5f5f5;
-    cursor: pointer;
-  }
+    .oauth-buttons button {
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        background: #f5f5f5;
+        cursor: pointer;
+    }
 
-  .separator {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: 20px 0;
-    color: #777;
-  }
+    .separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 20px 0;
+        color: #777;
+    }
 
-  .separator::before,
-  .separator::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: #ccc;
-    margin: 0 10px;
-  }
+    .separator::before,
+    .separator::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #ccc;
+        margin: 0 10px;
+    }
 
-  .form-group {
-    margin-bottom: 15px;
-  }
+    .form-group {
+        margin-bottom: 15px;
+    }
 
-  label {
-    display: block;
-    margin-bottom: 5px;
-  }
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
 
-  input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-  }
+    input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
 
-  form button[type="submit"] {
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-  }
+    form button[type="submit"] {
+        width: 100%;
+        padding: 12px;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+    }
 
-  form button[type="submit"]:hover {
-    background-color: #0056b3;
-  }
+    form button[type="submit"]:hover {
+        background-color: #0056b3;
+    }
 
-  .options {
-    text-align: center;
-    margin-top: 15px;
-  }
+    .options {
+        text-align: center;
+        margin-top: 15px;
+    }
 
-  .options a {
-    color: #007bff;
-    text-decoration: none;
-  }
+    .options a {
+        color: #007bff;
+        text-decoration: none;
+    }
 
-  .options a:hover {
-    text-decoration: underline;
-  }
+    .options a:hover {
+        text-decoration: underline;
+    }
 `;
 
 const injectStyles = () => {

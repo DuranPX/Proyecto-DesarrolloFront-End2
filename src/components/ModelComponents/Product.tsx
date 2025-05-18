@@ -19,12 +19,13 @@ export interface Product extends BaseModel {
     created_at: Date;
 }
 
-const Api_Url_Products = "http://127.0.0.1:5000/issues";
+const Api_Url_Products = "http://127.0.0.1:5000/products";
 
 const ProductComponent: React.FC = () => {
     const productFields = [
-        { label: 'ID', key: 'id' as keyof Product },
         { label: 'Nombre', key: 'name' as keyof Product },
+        { label: "", key:''},
+        { label: 'ID', key: 'id' as keyof Product },
         { label: 'Descripción', key: 'description' as keyof Product },
         { label: 'Precio', key: 'price' as keyof Product },
         { label: 'Categoría', key: 'category' as keyof Product },
@@ -42,6 +43,8 @@ const ProductComponent: React.FC = () => {
             createData={createProducts}
             updateData={updateProducts}
             deleteData={deleteProducts}
+            auxData=""
+            redirectUrlBuilder={(item) => `/productos`}
         />
     );
 }

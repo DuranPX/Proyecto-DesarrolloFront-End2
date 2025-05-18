@@ -3,7 +3,7 @@ import { logout } from "../../store/userSlice";
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
-
+  console.log("eliminando localstorage");
   const handleLogout = () => {
     dispatch(logout());
   };

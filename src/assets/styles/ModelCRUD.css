@@ -1,0 +1,68 @@
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.model-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  height: 250px;
+  padding: 1rem;
+  color: #f6f0f0;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.model-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('../images/COMIDAS-RÁPIDAS-Y-RESTAURANTES.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(8px);
+  transform: scale(1.1); /* evita bordes visibles del blur */
+  z-index: 0;
+}
+
+.model-card:hover {
+    transform: scale(1.05);
+}
+
+.card-front {
+    font-size: 1.2rem;
+    font-weight: bold;
+    z-index: 1;
+}
+
+.card-contextClick{
+    font-size: 0.7rem;
+    opacity: 70%;
+}
+
+.card-hover {
+    
+    position: absolute;
+    inset: 0;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    overflow-y: auto;
+}
+
+.model-card:hover .card-hover {
+    opacity: 1;
+}
+
+.model-card:hover .card-front {
+    opacity: 0;
+}

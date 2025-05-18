@@ -49,13 +49,17 @@ def microsoft_auth():
         'code': code,
         'grant_type': 'authorization_code',
         'redirect_uri': "http://localhost:5173/signin"
-    })
+    }, headers={'Content-Type': 'application/x-www-form-urlencoded'})
 
     if token_res.status_code != 200:
         print("Microsoft token response:", token_res.text)
         return jsonify({"error": "Failed to obtain token"}), 400
 
-    access_token = token_res.json().get("access_token")
+    token_json = token_res.json()
+    access_token = token_json.get("access_token")
+
+    if not access_token:
+        return jsonify({"error": "Access token not found"}), 400
 
     user_res = requests.get(MICROSOFT_USER_URL, headers={
         "Authorization": f"Bearer {access_token}"
@@ -69,16 +73,19 @@ def microsoft_auth():
         "name": user_data.get("displayName"),
         "email": user_data.get("userPrincipalName"),
         "picture": "",  # Microsoft Graph no da foto por defecto
+        "provider": "microsoft",
+        "token": access_token
     })
+
 
 # Github route
 @main_bp.route('/github', methods=['POST'])
 def github_auth():
     code = request.json.get('code')
     if not code:
-        return jsonify({"error": "No hay un codigo incluido"}), 400
+        return jsonify({"error": "No hay un código incluido"}), 400
 
-    #obtener access_token
+    # Obtener access_token
     token_res = requests.post(GITHUB_TOKEN_URL, data={
         'client_id': CLIENT_ID_GITHUB,
         'client_secret': CLIENT_SECRET_GITHUB,
@@ -90,19 +97,21 @@ def github_auth():
     if not access_token:
         return jsonify({"error": "No se pudo obtener el access token"}), 400
 
-    #obtener datos del usuario (segun su configuarcion de privacidad se mostrara o no el email)
+    # Obtener datos del usuario
     user_res = requests.get(GITHUB_USER_URL, headers={
         'Authorization': f'token {access_token}',
         'Accept': 'application/json'
     })
 
     user_json = user_res.json()
-    return jsonify({ # si estas husmeando te recomiendo no tocar nada jeje
+    return jsonify({
         'name': user_json.get('name'),
         'email': user_json.get('email'),
         'picture': user_json.get('avatar_url'),
-        'provider': 'github'
+        'provider': 'github',
+        'token': access_token
     })
+
 
 # Restaurante-menu Route
 @main_bp.route('/restaurants/<int:restaurant_id>/menus', methods=['GET'])
@@ -162,6 +171,8 @@ def get_menu(id):
 
 @main_bp.route('/menus', methods=['POST'])
 def create_menu():
+    data = request.get_json()
+    print("Datos Recibidos en Flask:", data)
     return jsonify(MenuController.create(request.json))
 
 @main_bp.route('/menus/<int:id>', methods=['PUT'])
@@ -173,9 +184,17 @@ def delete_menu(id):
     return jsonify(MenuController.delete(id))
 
 # Customer routes
+# Customer routes
 @main_bp.route('/customers', methods=['GET'])
 def get_customers():
     return jsonify(CustomerController.get_all())
+
+@main_bp.route('/customers/email/<string:email>', methods=['GET'])
+def get_customer_by_email(email):
+    customer = CustomerController.get_by_email(email)
+    if customer:
+        return jsonify(customer), 200
+    return jsonify(None), 404
 
 @main_bp.route('/customers/<int:id>', methods=['GET'])
 def get_customer(id):
@@ -184,6 +203,7 @@ def get_customer(id):
 @main_bp.route('/customers', methods=['POST'])
 def create_customer():
     return jsonify(CustomerController.create(request.json))
+
 
 @main_bp.route('/customers/<int:id>', methods=['PUT'])
 def update_customer(id):

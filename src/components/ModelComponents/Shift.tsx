@@ -46,6 +46,7 @@ const ShiftComponent: React.FC = () => {
             createData={createShift}
             updateData={updateShift}
             deleteData={deleteShift}
+            auxData={''}
         />
     );
 };
