@@ -1,5 +1,6 @@
 from app import db
 from app.business.models.address import Address
+from app.business.models.order import Order
 from flask import jsonify
 
 class AddressController:
@@ -56,3 +57,12 @@ class AddressController:
         db.session.commit()
         
         return {"message": "Address deleted successfully"}, 200
+    
+    @staticmethod
+    def get_by_customer(customer_id):
+        # 1. Obtén todas las órdenes del usuario
+        orders = Order.query.filter_by(customer_id=customer_id).all()
+        order_ids = [order.id for order in orders]
+        # 2. Busca todas las direcciones asociadas a esas órdenes
+        addresses = Address.query.filter(Address.order_id.in_(order_ids)).all()
+        return [address.to_dict() for address in addresses]

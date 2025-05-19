@@ -10,22 +10,52 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   return (
-    <header className="bg-gray-100 p-4 flex justify-between items-center">
-      <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-700 focus:outline-none">
-        {/* Icono de menú */}
-        ☰
+    <header className="bg-[#0f0f0f] border-b border-[#b70000] px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+      {/* Botón para abrir/cerrar sidebar */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="text-white hover:text-[#b70000] focus:outline-none p-2"
+        aria-label="Abrir menú lateral"
+      >
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
       </button>
-      <Link to='/'  className=''><img src={logoLarge} alt="Logo de la pagina" className='w-12' /></Link>
-      {/* Otros elementos del header */}
-      <div className="flex items-center gap-3 2xsm:gap-7">
-          <ul className="flex items-center gap-2 2xsm:gap-4">
-            <input type="text" name="" id="" placeholder='navbar' />
-            <p>DropDown Messages</p>
-            <p>Notificaciones</p>
-          </ul>
-          {/* User Area*/}
-          <DropdownUser></DropdownUser>
-          {/* User Area*/} 
+
+      {/* Logo */}
+      <Link to="/" className="flex items-center justify-center">
+        <img
+          src={logoLarge}
+          alt="Logo de la página"
+          className="h-10 w-auto object-contain"
+        />
+      </Link>
+
+      {/* Zona derecha */}
+      <div className="flex items-center space-x-4">
+        {/* Input de búsqueda */}
+        <div className="hidden sm:block">
+          <input
+            type="text"
+            placeholder="Buscar..."
+            className="px-3 py-1 rounded-lg bg-[#1a1a1a] border border-[#333] text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#b70000]"
+          />
+        </div>
+
+        {/* Iconos de mensajes y notificaciones */}
+        <div className="flex items-center space-x-3 text-white text-lg">
+          <p className="cursor-pointer hover:text-[#b70000]">📩</p>
+          <p className="cursor-pointer hover:text-[#b70000]">🔔</p>
+        </div>
+
+        {/* Dropdown de usuario */}
+        <DropdownUser />
       </div>
     </header>
   );

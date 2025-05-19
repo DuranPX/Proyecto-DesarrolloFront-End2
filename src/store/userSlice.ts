@@ -6,7 +6,6 @@ export interface UserState {
   email?: string | null;
   picture?: string | null;
   provider?: string | null;
-  address?: string | null;
   token?: string | null;
   phone?: number | null;
 }
@@ -37,7 +36,6 @@ const userSlice = createSlice({
         email = null,
         picture = null,
         provider = null,
-        address = null,
         token = null,
         phone = null,
       } = action.payload;
@@ -48,7 +46,6 @@ const userSlice = createSlice({
         email,
         picture,
         provider,
-        address,
         token,
         phone,
       };
