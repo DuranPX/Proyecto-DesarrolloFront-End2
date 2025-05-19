@@ -44,7 +44,7 @@ const ProductComponent: React.FC = () => {
             updateData={updateProducts}
             deleteData={deleteProducts}
             auxData=""
-            redirectUrlBuilder={(item) => `/productos`}
+            redirectUrlBuilder={() => `/productos`}
         />
     );
 }

@@ -42,6 +42,7 @@ const AdressComponent: React.FC = () => {
             createData={createAdress}
             updateData={updateAdress}
             deleteData={deleteAdress}
+            auxData=""
             
         />
     );

@@ -35,12 +35,13 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                     <p className="text-white font-bold text-sm mb-3 uppercase">Secciones</p>
                     <ul className="space-y-2">
                         {[
-                            ['Realizar Pedido', '/Realizar_Pedido'],
+                            ['Realizar Pedido', '/Pedidos'],
                             ['Menús', '/Menus'],
                             ['Restaurantes', '/restaurantes'],
                             ['Productos', '/productos'],
                             ['Conductores', '/Conductores'],
-                            ['Motos', '/Motocicletas']
+                            ['Motos', '/Motocicletas'],
+                            ['Clientes', '/clientes'],
                         ].map(([label, path]) => (
                             <li key={label}>
                                 <Link

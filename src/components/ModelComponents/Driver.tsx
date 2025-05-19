@@ -44,6 +44,7 @@ const DriverComponent: React.FC = () => {
             createData={createDriver}
             updateData={updateDriver}
             deleteData={deleteDriver}
+            auxData=''
         />
     );
 };

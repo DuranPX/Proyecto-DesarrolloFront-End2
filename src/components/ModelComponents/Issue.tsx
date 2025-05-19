@@ -48,6 +48,7 @@ const IssueComponent: React.FC = () => {
             createData={createIssue}
             updateData={updateIssue}
             deleteData={deleteIssue}
+            auxData=""
             
         />
     );

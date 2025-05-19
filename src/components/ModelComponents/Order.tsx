@@ -206,7 +206,12 @@ const OrderComponent: React.FC = () => {
                 Swal.fire('Error', 'No se pudo crear la orden', 'error');
             }
         } else {
-            Swal.fire('Error', 'No hay menú seleccionado', 'error');
+            if (!user || !user.id) {
+                Swal.fire('Error', 'Usuario no autenticado', 'error');
+                navigate('/signin');
+            }else{
+                Swal.fire('Error', 'No hay menú seleccionado', 'error');
+            }
         }
     };
 

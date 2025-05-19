@@ -40,6 +40,7 @@ const MotocicletaComponent: React.FC = () => {
             createData={createMotocicleta}
             updateData={updateMotocicleta}
             deleteData={deleteMotocicleta}
+            auxData=''
         />
     );
 };
