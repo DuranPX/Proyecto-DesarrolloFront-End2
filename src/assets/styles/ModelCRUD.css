@@ -1,3 +1,6 @@
+/* ModelCRUD.css */
+
+/* Estilos existentes (mantenidos) */
 .card-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -28,7 +31,7 @@
   background-size: cover;
   background-position: center;
   filter: blur(8px);
-  transform: scale(1.1); /* evita bordes visibles del blur */
+  transform: scale(1.1);
   z-index: 0;
 }
 
@@ -48,7 +51,6 @@
 }
 
 .card-hover {
-    
     position: absolute;
     inset: 0;
     padding: 1rem;
@@ -65,4 +67,185 @@
 
 .model-card:hover .card-front {
     opacity: 0;
+}
+
+/* Nuevos estilos para formularios y botones */
+
+.model-crud-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.model-crud-container h1 {
+    color: #2a003f;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.2rem;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.actions input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.actions button {
+    padding: 10px 20px;
+    background-color: #2a003f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.actions button:hover {
+    background-color: #1f002f;
+    transform: translateY(-2px);
+}
+
+/* Estilos para formularios */
+form {
+    background-color: #f9f9f9;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    border: 1px solid #eee;
+}
+
+form h2 {
+    color: #2a003f;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+form > div {
+    margin-bottom: 15px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+form input[type="text"],
+form input[type="number"],
+form input[type="email"],
+form input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+form input[type="text"]:focus,
+form input[type="number"]:focus,
+form input[type="email"]:focus,
+form input[type="password"]:focus {
+    outline: none;
+    border-color: #2a003f;
+    box-shadow: 0 0 0 2px rgba(42, 0, 63, 0.1);
+}
+
+form input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+    transform: scale(1.3);
+}
+
+/* Estilos para grupos de botones en formularios */
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: flex-end;
+}
+
+/* Estilos para botones */
+button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button[type="submit"] {
+    background: linear-gradient(to right, #2a003f, #4a00a0);
+    color: white;
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(to right, #1f002f, #3a0080);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+button[type="button"] {
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+button[type="button"]:hover {
+    background-color: #e1e1e1;
+    transform: translateY(-2px);
+}
+
+/* Estilos para mensajes de estado */
+.loading-message {
+    text-align: center;
+    padding: 20px;
+    color: #2a003f;
+    font-size: 1.1rem;
+}
+
+.error-message {
+    text-align: center;
+    padding: 15px;
+    background-color: #ffebee;
+    color: #d32f2f;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #d32f2f;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .actions {
+        flex-direction: column;
+    }
+    
+    .actions input,
+    .actions button {
+        width: 100%;
+    }
+    
+    .form-buttons {
+        flex-direction: column;
+    }
+    
+    button {
+        width: 100%;
+    }
 }
