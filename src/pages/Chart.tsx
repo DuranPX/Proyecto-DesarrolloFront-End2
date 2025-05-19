@@ -1,13 +1,13 @@
 import Breadcrumb from "../components/Breadcrumb";
-import CircularChartOne from "../components/CircularChartOne";
-import CircularChartTwo from "../components/CircularChartOne";
+import CircularChartOne from "../components/CircularChartOne.tsx";
+import CircularChartTwo from "../components/CircularChartOne.tsx";
 import CircularChartThree from "../components/CircularChartThree.tsx";
 import BarChartOne from "../components/BarChartOne.tsx";
 import BarChartTwo from "../components/BarChartTwo.tsx";
 import BarChartThree from "../components/BarChartThree.tsx";
-import TempSeriesChartOne from "../components/TempSeriesChartOne";
-import TempSeriesChartTwo from "../components/TempSeriesChartTwo";
-import TempSeriesChartThree from "../components/TempSeriesChartThree";
+import TempSeriesChartOne from "../components/TempSeriesChartOne.tsx";
+import TempSeriesChartTwo from "../components/TempSeriesChartTwo.tsx";
+import TempSeriesChartThree from "../components/TempSeriesChartThree.tsx";
 
 const Chart = () => {
   return (

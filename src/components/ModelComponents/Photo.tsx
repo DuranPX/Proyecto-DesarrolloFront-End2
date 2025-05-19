@@ -41,6 +41,7 @@ const PhotoComponent: React.FC = () => {
             createData={createPhoto}
             updateData={updatePhoto}
             deleteData={deletePhoto}
+            
         />
     );
 };

@@ -26,7 +26,7 @@ const TempSeriesChartOne: React.FC = () => {
   useEffect(() => {
     const fetchChartData = async () => {
       try {
-        const response = await fetch('https://0ae556e6-5b9a-456f-b3b7-c93463cd36d1.mock.pstmn.io/chart-data/7');
+        const response = await fetch('https://d7ae0275-a0cd-4f27-8cb5-5e6305717ea0.mock.pstmn.io/chart-data/7');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import axios from 'axios';
 
-const CircularChartOne = () => {
+const CircularChartThree = () => {
   const [chartData, setChartData] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://0ae556e6-5b9a-456f-b3b7-c93463cd36d1.mock.pstmn.io/chart-data/1');
+        const response = await axios.get('https://d7ae0275-a0cd-4f27-8cb5-5e6305717ea0.mock.pstmn.io/chart-data/1');
         
         // Convertir el string de formatter a función real
         const processedOptions = {
@@ -48,4 +48,4 @@ const CircularChartOne = () => {
   );
 };
 
-export default CircularChartOne;
+export default CircularChartThree;

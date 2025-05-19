@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import DropdownUser from './DropdownUser';
 import logoLarge from "../assets/images/Logo-Large-Devlivery.png";
-
+import DropdownUser from './DropdownUser';
+import Navbar from './Navbar';
 interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
@@ -49,10 +49,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
         </div>
 
         {/* Iconos de mensajes y notificaciones */}
-        <div className="flex items-center space-x-3 text-white text-lg">
-          <p className="cursor-pointer hover:text-[#b70000]">📩</p>
-          <p className="cursor-pointer hover:text-[#b70000]">🔔</p>
-        </div>
+        <Navbar></Navbar>
 
         {/* Dropdown de usuario */}
         <DropdownUser />
