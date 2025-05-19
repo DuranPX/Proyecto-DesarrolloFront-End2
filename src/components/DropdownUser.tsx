@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import LogoutButton from '../pages/Ui/LogOutButton';
 import UserOne from '../assets/images/peli.jpg';
+import "../assets/styles/DropdownUserCSS.css";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
@@ -9,24 +10,25 @@ import { RootState } from "../store/store";
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const user = useSelector((state: RootState) => state.user);
-  const trigger = useRef<any>(null);
-  const dropdown = useRef<any>(null);
+  const trigger = useRef<HTMLDivElement>(null);
+  const dropdown = useRef<HTMLDivElement>(null);
 
   // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
-      if (!dropdown.current) return;
+      if (!dropdown.current || !trigger.current) return;
       if (
         !dropdownOpen ||
-        dropdown.current.contains(target) ||
-        trigger.current.contains(target)
-      )
+        dropdown.current.contains(target as Node) ||
+        trigger.current.contains(target as Node)
+      ) {
         return;
+      }
       setDropdownOpen(false);
     };
     document.addEventListener('click', clickHandler);
     return () => document.removeEventListener('click', clickHandler);
-  });
+  }, [dropdownOpen]);
 
   // close if the esc key is pressed
   useEffect(() => {
@@ -36,56 +38,58 @@ const DropdownUser = () => {
     };
     document.addEventListener('keydown', keyHandler);
     return () => document.removeEventListener('keydown', keyHandler);
-  });
+  }, [dropdownOpen]);
 
-  return (user?
-  <div>
-    <div className="relative">
-      <Link
-        ref={trigger}
-        onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="flex items-center gap-4"
-        to="#"
-      >
-        <span className="h-12 w-12 rounded-full">
-          {user.picture?
-            <img className="rounded-full" src={user.picture} alt="User"/>:
-            <img src={UserOne} alt="Peli"/>
-          }  
-        </span>
-      </Link>
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
 
-      {/* <!-- Dropdown Start --> */}
-      <div
-        ref={dropdown}
-        onFocus={() => setDropdownOpen(true)}
-        onBlur={() => setDropdownOpen(false)}
-        className={`absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ${
-          dropdownOpen === true ? 'block' : 'hidden'
-        }`}
-      >
-        <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
-          <li>
-            <Link
-              to="/perfil"
-              className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
-            >
-              Mi Perfil
-            </Link>
-          </li>
-        </ul>
-      <LogoutButton></LogoutButton>  
+  return user ? (
+    <div className="dropdown-container">
+      <div className="popup">
+        <div 
+          ref={trigger}
+          tabIndex={0}
+          className="burger profile-trigger"
+          onClick={toggleDropdown}
+          onKeyDown={(e) => e.key === 'Enter' && toggleDropdown()}
+        >
+          {user.picture ? (
+            <img className="profileImage" src={user.picture} alt="User" />
+          ) : (
+            <img className="profileImage" src={UserOne} alt="Peli" />
+          )}
+        </div>
+        
+        <div
+          ref={dropdown}
+          className={`popup-window ${dropdownOpen ? 'active' : ''}`}
+        >
+          <div className="dropdown-title">Mi Cuenta</div>
+          <ul>
+            <li>
+              <Link to="/perfil" className="dropdown-link">
+                <span className="icon">👤</span>
+                <span>Mi Perfil</span>
+              </Link>
+            </li>
+            <li>
+              <LogoutButton />
+            </li>
+          </ul>
+        </div>
       </div>
-      {/* <!-- Dropdown End --> */}
     </div>
-  </div>:
-  <div>
-      <Link
-        to="/signin" className="block py-2 text-gray-700 hover:bg-gray-300">
-                <button>Iniciar sesión</button>
+  ) : (
+    <div className="auth-links">
+      <Link to="/signin" className="auth-link">
+        <button>
+          <span className="icon">🔑</span>
+          <span>Iniciar Sesión</span>
+        </button>
       </Link>
-  </div>
+    </div>
   );
 };
 
-export default DropdownUser;
+export default DropdownUser;

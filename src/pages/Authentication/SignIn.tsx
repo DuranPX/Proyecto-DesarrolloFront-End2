@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import { useDispatch } from 'react-redux';
-import type { AppDispatch } from '../../store/store'; // importa tu tipo
-import { setUser } from '../../store/userSlice'; // Ajusta según tu estructura
-import { createCustomerOnLogin } from '../../services/CustomerService'; // Importa la función
-import { hasRequiredUserData } from '../../services/CustomerService'; // Importa la función
+import type { AppDispatch } from '../../store/store';
+import { setUser } from '../../store/userSlice';
+import { createCustomerOnLogin } from '../../services/CustomerService';
+import { hasRequiredUserData } from '../../services/CustomerService';
+import "../../assets/styles/SignInCSS.css";
 
 interface OauthJwtPayload {
   name: string;
@@ -21,7 +22,14 @@ const SignIn: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // Manejar login con Google
+  // Agregar clase al body cuando se monta el componente
+  useEffect(() => {
+    document.body.classList.add('signin-page');
+    return () => {
+      document.body.classList.remove('signin-page');
+    };
+  }, []);
+
   const handleGoogleSuccess = (credentialResponse: any) => {
     if (credentialResponse.credential) {
       const decoded = jwtDecode<OauthJwtPayload>(credentialResponse.credential);
@@ -33,9 +41,7 @@ const SignIn: React.FC = () => {
         token: credentialResponse.credential,
       };
       dispatch(setUser(userData));
-      // Llama SIEMPRE a createCustomerOnLogin
       dispatch(createCustomerOnLogin(userData));
-      // Si faltan datos, navega a perfil para completarlos
       if (!hasRequiredUserData(userData)) {
         navigate("/perfil");
         return;
@@ -44,7 +50,6 @@ const SignIn: React.FC = () => {
     }
   };
 
-  // Redirige al login de GitHub
   const handleGitHubLogin = () => {
     localStorage.setItem("oauth_provider", "github");
     const redirectUri = encodeURIComponent(window.location.origin + "/signin");
@@ -97,7 +102,7 @@ const SignIn: React.FC = () => {
           const userPayload = {
             name: userData.name,
             email: userData.email,
-            picture: userData.picture || userData.avatar_url || "", // Soporta ambos campos
+            picture: userData.picture || userData.avatar_url || "",
             provider: provider || "unknown",
             token: userData.token,
           };
@@ -121,24 +126,20 @@ const SignIn: React.FC = () => {
     }
   }, [dispatch, navigate]);
 
-  // Inyecta estilos al cargar el componente
-  useEffect(() => {
-    injectStyles();
-  }, []);
-
   return (
     <div className="container">
       <h2>Iniciar Sesión</h2>
 
       <div className="oauth-buttons">
         <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => console.log("Error con Google")} />
-        <button className="github-button" onClick={handleGitHubLogin}>
+        <button className="oauth-button" onClick={handleGitHubLogin}>
           <span className="icon" />
           <span>Continuar con GitHub</span>
         </button>
-        <button onClick={handleMicrosoftLogin}>
-          <span className='icon' />
-          Iniciar sesión con Microsoft</button>
+        <button className="oauth-button" onClick={handleMicrosoftLogin}>
+          <span className="icon" />
+          <span>Iniciar sesión con Microsoft</span>
+        </button>
       </div>
 
       <div className="separator"><span>O</span></div>
@@ -156,49 +157,10 @@ const SignIn: React.FC = () => {
       </form>
 
       <div className="options">
-        ¿No tienes una cuenta? <Link to="/">Sorry aun no hay un SingUp</Link>
+        ¿No tienes una cuenta? <Link to="/signup">Regístrate aquí</Link>
       </div>
     </div>
   );
 };
 
-// Estilos CSS inyectados dinámicamente
-const styles = `
-  body {
-    background: linear-gradient(135deg, #F6F0F0, #F2DC2A30);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-  }
-
-  .container {
-    background: #ffffff;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(17, 17, 17, 0.15);
-    width: 100%;
-    max-width: 420px;
-    border: 1px solid #ddd;
-  }
-
-  h2 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #2a003f; /* Morado oscuro */
-    font-size: 26px;
-  }
-
-  .oauth-buttons {
-    
-  
-  };`
-
-const injectStyles = () => {
-  const style = document.createElement("style");
-  style.textContent = styles;
-  document.head.appendChild(style);
-}
 export default SignIn;
