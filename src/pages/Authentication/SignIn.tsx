@@ -32,13 +32,14 @@ const SignIn: React.FC = () => {
         provider: "google",
         token: credentialResponse.credential,
       };
+      dispatch(setUser(userData));
+      // Llama SIEMPRE a createCustomerOnLogin
+      dispatch(createCustomerOnLogin(userData));
+      // Si faltan datos, navega a perfil para completarlos
       if (!hasRequiredUserData(userData)) {
-        dispatch(setUser(userData));
         navigate("/perfil");
         return;
       }
-      dispatch(setUser(userData));
-      dispatch(createCustomerOnLogin(userData));
       navigate("/");
     }
   };
@@ -101,12 +102,12 @@ const SignIn: React.FC = () => {
             token: userData.token,
           };
           dispatch(setUser(userPayload));
+          dispatch(createCustomerOnLogin(userPayload));
           if (!hasRequiredUserData(userPayload)) {
             localStorage.removeItem("oauth_provider");
             navigate("/perfil");
             return;
           }
-          dispatch(createCustomerOnLogin(userPayload));
           localStorage.removeItem("oauth_provider");
           navigate("/");
         } catch (error) {
@@ -163,101 +164,41 @@ const SignIn: React.FC = () => {
 
 // Estilos CSS inyectados dinámicamente
 const styles = `
-    .container {
-        background-color: #fff;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        width: 350px;
-        margin: auto;
-    }
+  body {
+    background: linear-gradient(135deg, #F6F0F0, #F2DC2A30);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
 
-    h2 {
-        text-align: center;
-        margin-bottom: 20px;
-    }
+  .container {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(17, 17, 17, 0.15);
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid #ddd;
+  }
 
-    .oauth-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
+  h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2a003f; /* Morado oscuro */
+    font-size: 26px;
+  }
 
-    .oauth-buttons button {
-        padding: 10px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-        background: #f5f5f5;
-        cursor: pointer;
-    }
-
-    .separator {
-        display: flex;
-        align-items: center;
-        text-align: center;
-        margin: 20px 0;
-        color: #777;
-    }
-
-    .separator::before,
-    .separator::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: #ccc;
-        margin: 0 10px;
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    input {
-        width: 100%;
-        padding: 10px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-    }
-
-    form button[type="submit"] {
-        width: 100%;
-        padding: 12px;
-        background-color: #007bff;
-        color: #fff;
-        border-radius: 4px;
-        border: none;
-        cursor: pointer;
-    }
-
-    form button[type="submit"]:hover {
-        background-color: #0056b3;
-    }
-
-    .options {
-        text-align: center;
-        margin-top: 15px;
-    }
-
-    .options a {
-        color: #007bff;
-        text-decoration: none;
-    }
-
-    .options a:hover {
-        text-decoration: underline;
-    }
-`;
+  .oauth-buttons {
+    
+  
+  };`
 
 const injectStyles = () => {
   const style = document.createElement("style");
   style.textContent = styles;
   document.head.appendChild(style);
-};
-
+}
 export default SignIn;

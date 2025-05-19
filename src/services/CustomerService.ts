@@ -7,6 +7,7 @@ const API_URL_CUSTOMERS = "http://127.0.0.1:5000/customers";
 // Buscar customer por email usando el nuevo endpoint
 export const fetchCustomerByEmail = async (email: string) => {
     const response = await fetch(`${API_URL_CUSTOMERS}/email/${encodeURIComponent(email)}`);
+    console.log("Respuesta del backend al buscar cliente por email:", response);
     if (response.ok) {
         const customer = await response.json();
         return customer; // null si no existe
@@ -17,10 +18,12 @@ export const fetchCustomerByEmail = async (email: string) => {
 // Crea el customer solo si no existe, si existe lo trae y actualiza el store
 export const createCustomerOnLogin = (userData: UserState) => {
     return async (dispatch: AppDispatch, getState: () => RootState) => {
+        console.log("Datos del usuario al iniciar sesión:", userData);
         try {
             // Buscar siempre por email antes de crear
             if (userData.email) {
                 const existingCustomer = await fetchCustomerByEmail(userData.email);
+                console.log("Cliente existente:", existingCustomer);
                 if (existingCustomer && existingCustomer.id) {
                     dispatch(setUser({
                         ...userData,
@@ -56,7 +59,6 @@ export const createCustomerOnLogin = (userData: UserState) => {
                     id: newCustomer.id ? Number(newCustomer.id) : currentUser?.id || null,
                     token: currentUser?.token || userData.token || "",
                     provider: currentUser?.provider || userData.provider || "",
-                    address: currentUser?.address ?? userData.address,
                     phone: newCustomer.phone ?? userData.phone ?? currentUser?.phone ?? null,
                 };
                 console.log("Usuario actualizado:", updatedUser);

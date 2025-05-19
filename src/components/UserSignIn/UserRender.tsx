@@ -128,19 +128,6 @@ const UserInfo = () => {
               )}
             </div>
           ))}
-          <div>
-            <strong className="text-[#B70000]">Dirección:</strong>
-            {user.address ? (
-              <span className="text-[#111111] ml-2">{user.address}</span>
-            ) : (
-              <button
-                onClick={() => handleEditClick('address')}
-                className="ml-2 text-[#F2DC2A] underline text-sm"
-              >
-                Agregar Dirección
-              </button>
-            )}
-          </div>
         </div>
       </div>
 

@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store.ts'; // Asegúrate de que esta ruta sea correcta
+import { RootState } from '../../store/store.ts';
 import {
     getAllModel as getAllOrders,
     createModel as createOrder,
+    createModel as createAdress,
     deleteModel as deleteOrder,
     updateModel as updateOrder
 } from '../../services/modelsService';
@@ -13,6 +14,8 @@ import { Customer } from './Customer.tsx';
 import { Motocicleta } from './Motorcycle.tsx';
 import { Adress } from './Adress.tsx';
 import { Menu } from './Menu.tsx';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 export interface Order extends BaseModel {
     created_at: string;
@@ -30,51 +33,56 @@ export interface Order extends BaseModel {
 }
 
 const Api_Url_Orders = "http://127.0.0.1:5000/orders";
+const Api_Url_Adresses = "http://127.0.0.1:5000/addresses";
+const Api_Url_Menus = "http://127.0.0.1:5000/menus";
+
+const MySwal = withReactContent(Swal);
 
 const OrderComponent: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [editingOrderId, setEditingOrderId] = useState<number | null>(null);
     const [editedQuantity, setEditedQuantity] = useState<number>(1);
+    const [menuPreview, setMenuPreview] = useState<any | null>(null);
 
     const { menu_id } = useParams();
     const navigate = useNavigate();
-    const orderCreated = useRef(false);
 
     const user = useSelector((state: RootState) => state.user);
 
+    // Cargar pedidos existentes del usuario
     useEffect(() => {
-    const fetchOrders = async () => {
-        const data = await getAllOrders(Api_Url_Orders);
-        // Filtra solo las órdenes del usuario actual
-        if (user && user.id) {
-            setOrders(data.filter((order: Order) => order.customer_id === user.id));
-        } else {
-            setOrders([]);
-        }
-    };
-
-    const createOrderIfNeeded = async () => {
-        if (menu_id && user && !orderCreated.current) {
-            const id = parseInt(menu_id);
-            if (!isNaN(id)) {
-                orderCreated.current = true;
-                await createOrder(Api_Url_Orders, {
-                    customer_id: user.id,
-                    menu_id: id,
-                    motorcycle_id: 1,
-                    quantity: 1,
-                    total_price: 1000,
-                    status: 'pending',
-                });
-                navigate('/pedidos');
+        const fetchOrders = async () => {
+            const data = await getAllOrders(Api_Url_Orders);
+            if (user && user.id) {
+                setOrders(data.filter((order: Order) => order.customer_id === user.id));
+            } else {
+                setOrders([]);
             }
-        } else {
-            fetchOrders();
-        }
-    };
+        };
+        fetchOrders();
+    }, [user]);
 
-    createOrderIfNeeded();
-}, [menu_id, navigate, user]);
+    // Si hay menu_id en la ruta, busca el menú y lo muestra como preliminar
+    useEffect(() => {
+        const fetchMenu = async () => {
+            if (menu_id) {
+                const res = await fetch(`${Api_Url_Menus}/${menu_id}`);
+                if (res.ok) {
+                    const menu = await res.json();
+                    setMenuPreview({
+                        id: Number(menu_id),
+                        menu_id: Number(menu_id),
+                        menu: menu,
+                        quantity: 1,
+                        total_price: menu.price,
+                    });
+                }
+            } else {
+                setMenuPreview(null);
+            }
+        };
+        fetchMenu();
+    }, [menu_id]);
 
     const handleDelete = async (id: number) => {
         await deleteOrder(Api_Url_Orders, id);
@@ -97,8 +105,121 @@ const OrderComponent: React.FC = () => {
         setEditingOrderId(null);
     };
 
-    const mostrarCarrito = () => {
-        console.log(orders);
+    // Solicita la dirección y la asocia a la orden
+    const solicitarDireccion = async (orderId: number) => {
+        if (!user || !user.id) {
+            Swal.fire('Error', 'Usuario no autenticado', 'error');
+            return;
+        }
+        // 1. Obtén direcciones guardadas del usuario
+        const res = await fetch(`http://127.0.0.1:5000/addresses?customer_id=${user.id}`);
+        const direcciones = await res.json();
+
+        // 2. Construye las opciones para el select
+        const options = direcciones.length
+            ? direcciones.map((dir: any) =>
+                `<option value="${dir.id}">${dir.street}, ${dir.city}</option>`
+              ).join('') + `<option value="nueva">Ingresar nueva dirección</option>`
+            : `<option value="nueva">Ingresar nueva dirección</option>`;
+
+        // 3. Muestra el Swal con el select y los inputs
+        const { value: formValues } = await MySwal.fire({
+            title: 'Selecciona o ingresa tu dirección',
+            html:
+                `<select id="swal-address-select" class="swal2-input">${options}</select>` +
+                `<div id="swal-new-address-fields" style="display:none">
+                    <input id="swal-street" class="swal2-input" placeholder="Calle" />
+                    <input id="swal-city" class="swal2-input" placeholder="Ciudad" />
+                    <input id="swal-state" class="swal2-input" placeholder="Departamento" />
+                    <input id="swal-postal" class="swal2-input" placeholder="Código Postal" />
+                    <input id="swal-info" class="swal2-input" placeholder="Información adicional" />
+                </div>`,
+            didOpen: () => {
+                const select = document.getElementById('swal-address-select') as HTMLSelectElement;
+                const newFields = document.getElementById('swal-new-address-fields') as HTMLDivElement;
+                select?.addEventListener('change', () => {
+                    if (select.value === 'nueva') {
+                        newFields.style.display = '';
+                    } else {
+                        newFields.style.display = 'none';
+                    }
+                });
+            },
+            preConfirm: () => {
+                const select = document.getElementById('swal-address-select') as HTMLSelectElement;
+                if (select.value === 'nueva') {
+                    return {
+                        nueva: true,
+                        street: (document.getElementById('swal-street') as HTMLInputElement).value,
+                        city: (document.getElementById('swal-city') as HTMLInputElement).value,
+                        state: (document.getElementById('swal-state') as HTMLInputElement).value,
+                        postal_code: (document.getElementById('swal-postal') as HTMLInputElement).value,
+                        additional_info: (document.getElementById('swal-info') as HTMLInputElement).value,
+                    };
+                } else {
+                    return { nueva: false, address_id: select.value };
+                }
+            }
+        });
+
+        // 4. Usa la dirección seleccionada o crea una nueva
+        if (formValues) {
+            if (formValues.nueva) {
+                // Crea la nueva dirección y la asocia a la orden
+                const addressPayload = {
+                    order_id: orderId,
+                    street: formValues.street,
+                    city: formValues.city,
+                    state: formValues.state,
+                    postal_code: formValues.postal_code,
+                    additional_info: formValues.additional_info,
+                };
+                await createAdress(Api_Url_Adresses, addressPayload);
+            } else {
+                // Solo asocia la dirección existente a la orden (si tu modelo lo permite)
+                // Si no, puedes actualizar la orden con el address_id seleccionado
+                // await updateOrder(Api_Url_Orders, orderId, { address_id: formValues.address_id });
+            }
+            Swal.fire('¡Dirección guardada y pedido realizado!', '', 'success');
+            navigate('/pedidos');
+        }
+    };
+
+    // Al hacer click en "Realizar Pedido"
+    const handleRealizarPedido = async () => {
+        if (user && user.id && menuPreview) {
+            const orderPayload = {
+                customer_id: user.id,
+                menu_id: menuPreview.menu_id,
+                motorcycle_id: 1,
+                quantity: menuPreview.quantity,
+                total_price: menuPreview.menu.price * menuPreview.quantity,
+                status: 'pending',
+            };
+            console.log("Creando orden:", orderPayload);
+            const newOrder = await createOrder(Api_Url_Orders, orderPayload);
+            const orderObj = Array.isArray(newOrder) ? newOrder[0] : (newOrder?.data ?? newOrder);
+
+            if (orderObj && orderObj.id) {
+                await solicitarDireccion(orderObj.id);
+            } else {
+                Swal.fire('Error', 'No se pudo crear la orden', 'error');
+            }
+        } else {
+            Swal.fire('Error', 'No hay menú seleccionado', 'error');
+        }
+    };
+
+    // Permite editar la cantidad del menú preliminar
+    const handleEditMenuPreview = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = Number(e.target.value);
+        if (menuPreview && value > 0) {
+            setMenuPreview({
+                ...menuPreview,
+                quantity: value,
+                total_price: menuPreview.menu.price * value,
+            });
+        }
     };
 
     return (
@@ -106,11 +227,30 @@ const OrderComponent: React.FC = () => {
             <div className="shopping-cart p-6 border rounded w-full max-w-md bg-white shadow">
                 <div className="header flex items-center gap-2 mb-4">
                     <i className="fas fa-shopping-cart text-xl"></i>
-                    <span className="font-bold">Carrito ({orders.length})</span>
+                    <span className="font-bold">Carrito ({orders.length + (menuPreview ? 1 : 0)})</span>
                 </div>
 
                 <ul className="cart-items space-y-2">
-                    {orders.length === 0 ? (
+                    {menuPreview && (
+                        <li className="flex flex-col border-b pb-2 bg-green-50">
+                            <div className="flex justify-between items-center">
+                                <span className="font-medium">{menuPreview.menu?.product?.name ?? 'Producto'}</span>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="number"
+                                        value={menuPreview.quantity}
+                                        onChange={handleEditMenuPreview}
+                                        className="w-16 px-1 border rounded text-sm"
+                                        min={1}
+                                    />
+                                </div>
+                            </div>
+                            <div className="text-sm text-gray-600">
+                                Cantidad: {menuPreview.quantity} | Total: ${menuPreview.total_price.toFixed(2)}
+                            </div>
+                        </li>
+                    )}
+                    {orders.length === 0 && !menuPreview ? (
                         <li className="text-gray-500">El carrito está vacío</li>
                     ) : (
                         orders.map((order) => (
@@ -164,12 +304,14 @@ const OrderComponent: React.FC = () => {
                 >
                     Agregar producto
                 </Link>
-                <button
-                    onClick={() => mostrarCarrito()}
-                    className="mt-2 block w-full text-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                >
-                    Realizar Pedido
-                </button>
+                {menuPreview && (
+                    <button
+                        onClick={handleRealizarPedido}
+                        className="mt-2 block w-full text-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    >
+                        Realizar Pedido
+                    </button>
+                )}
             </div>
         </div>
     );
