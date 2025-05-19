@@ -1,4 +1,4 @@
-import { secureAxios } from './securityService'; // <-- usa el seguro
+import { secureAxios } from './securityService'; // <-- usa el segurity service
 import axios from 'axios';
 
 const getAllModel = async (API_BASE_URL: string) => {

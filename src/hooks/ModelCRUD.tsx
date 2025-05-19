@@ -147,9 +147,25 @@ const ModelCrudComponent = <T extends BaseModel,>({
             const item = await fetchSingleData(apiUrl, Number(searchId));
             setLoading(false);
             if (item) {
+                console.log("Elemento encontrado:", item);
                 const htmlContent = Object.entries(item)
                     .filter(([key]) => key !== 'id')
-                    .map(([key, value]) => `<strong>${key}:</strong> ${value}<br/>`)
+                    .map(([key, value]) => {
+                        if (typeof value === 'object' && value !== null) {
+                            // Si el objeto tiene 'name', muestra solo el name
+                            if ('name' in value) {
+                                return `<strong>${key}:</strong> ${value.name}<br/>`;
+                            }
+                            // Si no, muestra sus propiedades principales
+                            const subfields = Object.entries(value)
+                                .filter(([k]) => typeof value[k] !== 'object')
+                                .map(([k, v]) => `<em>${k}:</em> ${v}`)
+                                .join(', ');
+                            return `<strong>${key}:</strong> { ${subfields} }<br/>`;
+                        } else {
+                            return `<strong>${key}:</strong> ${value}<br/>`;
+                        }
+                    })
                     .join('');
                 Swal.fire({ icon: 'success', title: `${modelNameSingular} Encontrado`, html: htmlContent });
             } else {
@@ -212,11 +228,24 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                             checked={formData[String(field.key)] || false}
                                         />
                                     ) : String(field.key) === 'restaurant_id' ? (
-                                        <input
-                                            type="hidden"
-                                            name="restaurant_id"
-                                            value={auxData || ''} // Asegúrate de que auxData tenga el valor correcto
-                                        />
+                                        (typeof auxData === 'string' && auxData.trim() !== '' && auxData !== 'null' && auxData !== 'undefined')
+                                            ? (
+                                                <input
+                                                    type="hidden"
+                                                    name="restaurant_id"
+                                                    value={auxData}
+                                                />
+                                            )
+                                            : (
+                                                <input
+                                                    type="text"
+                                                    id="restaurant_id"
+                                                    name="restaurant_id"
+                                                    onChange={handleInputChange}
+                                                    required
+                                                    defaultValue={formData["restaurant_id"] || ""}
+                                                />
+                                            )
                                     ) : (
                                         <input
                                             type={field.type || 'text'}
@@ -224,9 +253,8 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                             name={String(field.key)}
                                             onChange={handleInputChange}
                                             required={!field.type || field.type !== 'email'}
-                                            // ¡Elimina o condiciona la propiedad disabled para otros campos si es necesario!
                                             disabled={String(field.key).includes('.')}
-                                            defaultValue={formData[String(field.key)] || ''} // Usa formData para otros valores iniciales
+                                            defaultValue={formData[String(field.key)] || ''}
                                         />
                                     )}
                                 </div>
