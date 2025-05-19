@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import DropdownUser from './DropdownUser';
 import logoLarge from "../assets/images/Logo-Large-Devlivery.png";
-
+import DropdownUser from './DropdownUser';
+import Navbar from './Navbar';
 interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
@@ -20,8 +20,8 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
       <div className="flex items-center gap-3 2xsm:gap-7">
           <ul className="flex items-center gap-2 2xsm:gap-4">
             <input type="text" name="" id="" placeholder='navbar' />
-            <p>DropDown Messages</p>
-            <p>Notificaciones</p>
+            {/* Notificaciones */}
+            <Navbar></Navbar>
           </ul>
           {/* User Area*/}
           <DropdownUser></DropdownUser>

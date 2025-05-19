@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import axios from 'axios';
 
-const CircularChartOne = () => {
+const CircularChartThree = () => {
   const [chartData, setChartData] = useState<any>(null);
 
   useEffect(() => {
@@ -48,4 +48,4 @@ const CircularChartOne = () => {
   );
 };
 
-export default CircularChartOne;
+export default CircularChartThree;
