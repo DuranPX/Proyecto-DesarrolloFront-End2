@@ -237,7 +237,11 @@ def delete_order(id):
 # Address routes
 @main_bp.route('/addresses', methods=['GET'])
 def get_addresses():
-    return jsonify(AddressController.get_all())
+    customer_id = request.args.get('customer_id')
+    if customer_id:
+        return jsonify(AddressController.get_by_customer(customer_id))
+    else:
+        return jsonify(AddressController.get_all())
 
 @main_bp.route('/addresses/<int:id>', methods=['GET'])
 def get_address(id):
