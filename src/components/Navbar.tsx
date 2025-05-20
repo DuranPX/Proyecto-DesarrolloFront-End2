@@ -17,26 +17,26 @@ const Navbar = () => {
             {
                 id: 'test_1',
                 title: 'Pedido recibido',
-                message: 'Nuevo pedido de restaurante Mexicano',
+                message: 'Nuevo pedido de restaurante sustentacion',
                 type: 'info',
                 timestamp: new Date(),
                 read: false,
                 notificationType: 'new_order',
                 relatedData: {
-                    customer: { name: 'Juan Pérez' },
-                    menu: { restaurant: { name: 'La Mexicana' } }
+                    customer: { name: 'sustentacion' },
+                    menu: { restaurant: { name: 'sustentacion' } }
                 }
             },
             {
                 id: 'test_2',
-                title: 'Problema reportado',
-                message: 'La moto #125 tiene fallas mecánicas',
+                title: 'Movimiento de moto',
+                message: 'La moto #125 se movió',
                 type: 'error',
                 timestamp: new Date(Date.now() - 3600000), // Hace 1 hora
                 read: false,
-                notificationType: 'motorcycle_issue',
+                notificationType: 'motorcycle_moved',
                 relatedData: {
-                    description: 'Falla en el motor',
+                    description: 'Se movió de posición',
                     motorcycle: { plate: 'ABC-125' }
                 }
             }

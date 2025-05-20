@@ -234,7 +234,6 @@ const OrderComponent: React.FC = () => {
                     <i className="fas fa-shopping-cart text-xl"></i>
                     <span className="font-bold">Carrito ({orders.length + (menuPreview ? 1 : 0)})</span>
                 </div>
-
                 <ul className="cart-items space-y-2">
                     {menuPreview && (
                         <li className="flex flex-col border-b pb-2 bg-green-50">

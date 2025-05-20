@@ -1,3 +1,4 @@
+
 import React from 'react';
 import ModelCrudComponent from '../../hooks/ModelCRUD';
 import { BaseModel } from '../../hooks/ModelCRUD';
