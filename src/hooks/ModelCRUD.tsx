@@ -20,6 +20,10 @@ interface ModelCrudProps<T extends BaseModel> {
     deleteData: (apiUrl: string, id: number) => Promise<void>;
     redirectUrlBuilder?: (item: T) => string;
     auxData: string | null;
+    productos?: { id: number; name: string }[];
+    restaurantes?: { id: number; name: string }[];
+    clientes?: { id: number; name: string }[];
+    conductores?: { id: number; name: string }[];
 }
 
 const ModelCrudComponent = <T extends BaseModel,>({
@@ -33,7 +37,11 @@ const ModelCrudComponent = <T extends BaseModel,>({
     updateData,
     deleteData,
     redirectUrlBuilder,
-    auxData
+    auxData,
+    productos,
+    restaurantes,
+    clientes,
+    conductores,
 }: ModelCrudProps<T>) => {
     const [items, setItems] = useState<T[]>([]);
     const [loading, setLoading] = useState(false);
@@ -226,26 +234,58 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                             name={String(field.key)}
                                             onChange={handleInputChange}
                                             checked={formData[String(field.key)] || false}
+                                            className="input" // <-- Aplica tu clase aquí
                                         />
-                                    ) : String(field.key) === 'restaurant_id' ? (
-                                        (typeof auxData === 'string' && auxData.trim() !== '' && auxData !== 'null' && auxData !== 'undefined')
-                                            ? (
-                                                <input
-                                                    type="hidden"
-                                                    name="restaurant_id"
-                                                    value={auxData}
-                                                />
-                                            )
-                                            : (
-                                                <input
-                                                    type="text"
-                                                    id="restaurant_id"
-                                                    name="restaurant_id"
-                                                    onChange={handleInputChange}
-                                                    required
-                                                    defaultValue={formData["restaurant_id"] || ""}
-                                                />
-                                            )
+                                    ) : String(field.key) === 'product.name' && productos ? (
+                                        <>
+                                            <input
+                                                list="productos-list"
+                                                id="product_name"
+                                                name="product_name"
+                                                onChange={e => {
+                                                    const selected = productos.find(p => p.name === e.target.value);
+                                                    setFormData({
+                                                        ...formData,
+                                                        product_id: selected ? selected.id : '',
+                                                        ['product.name']: e.target.value
+                                                    });
+                                                }}
+                                                required
+                                                value={formData['product.name'] || ''}
+                                                className="input" // <-- Aplica tu clase aquí
+                                                style={{ width: '100%' }} // Opcional, para igualar tamaño
+                                            />
+                                            <datalist id="productos-list">
+                                                {productos.map(p => (
+                                                    <option key={p.id} value={p.name} />
+                                                ))}
+                                            </datalist>
+                                        </>
+                                    ) : String(field.key) === 'restaurant.name' && restaurantes ? (
+                                        <>
+                                            <input
+                                                list="restaurantes-list"
+                                                id="restaurant_name"
+                                                name="restaurant_name"
+                                                onChange={e => {
+                                                    const selected = restaurantes.find(r => r.name === e.target.value);
+                                                    setFormData({
+                                                        ...formData,
+                                                        restaurant_id: selected ? selected.id : '', // <-- Esto asegura que se guarde el id correcto
+                                                        ['restaurant.name']: e.target.value
+                                                    });
+                                                }}
+                                                required
+                                                value={formData['restaurant.name'] || ''}
+                                                className="input"
+                                                style={{ width: '100%' }}
+                                            />
+                                            <datalist id="restaurantes-list">
+                                                {restaurantes.map(r => (
+                                                    <option key={r.id} value={r.name} />
+                                                ))}
+                                            </datalist>
+                                        </>
                                     ) : (
                                         <input
                                             type={field.type || 'text'}
@@ -254,18 +294,18 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                             onChange={handleInputChange}
                                             required={!field.type || field.type !== 'email'}
                                             disabled={String(field.key).includes('.')}
-                                            defaultValue={formData[String(field.key)] || ''}
+                                            value={formData[String(field.key)] || ''}
+                                            className="input" // <-- Aplica tu clase aquí
+                                            style={{ width: '100%' }} // Opcional, para igualar tamaño
                                         />
                                     )}
                                 </div>
                             )
                         ))}
-
                         <button type="submit" disabled={loading}>Crear</button>
                         <button type="button" onClick={() => setCrear(false)}>Cancelar</button>
                     </form>
                 )}
-
                 {actualizarId !== null && (
                     <form onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
                         <h2>Actualizar {modelNameSingular}</h2>
@@ -282,14 +322,81 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                                     name={String(field.key)}
                                                     onChange={handleInputChange}
                                                     checked={formData[String(field.key)] !== undefined ? formData[String(field.key)] : getValueByPath(item, String(field.key))}
+                                                    className="input"
                                                 />
+                                            ) : String(field.key) === 'product.name' && productos ? (
+                                                <>
+                                                    <input
+                                                        list="productos-list"
+                                                        id="product_name_update"
+                                                        name="product_name"
+                                                        onChange={e => {
+                                                            const selected = productos.find(p => p.name === e.target.value);
+                                                            setFormData({
+                                                                ...formData,
+                                                                product_id: selected ? selected.id : '',
+                                                                ['product.name']: e.target.value
+                                                            });
+                                                        }}
+                                                        required
+                                                        value={
+                                                            formData['product.name'] !== undefined
+                                                                ? formData['product.name']
+                                                                : getValueByPath(item, 'product.name') || ''
+                                                        }
+                                                        className="input"
+                                                        style={{ width: '100%' }}
+                                                    />
+                                                    <datalist id="productos-list">
+                                                        {productos.map(p => (
+                                                            <option key={p.id} value={p.name} />
+                                                        ))}
+                                                    </datalist>
+                                                </>
+                                            ) : String(field.key) === 'restaurant.name' && restaurantes ? (
+                                                <>
+                                                    <input
+                                                        list="restaurantes-list"
+                                                        id="restaurant_name_update"
+                                                        name="restaurant_name"
+                                                        onChange={e => {
+                                                            const selected = restaurantes.find(r => r.name === e.target.value);
+                                                            setFormData({
+                                                                ...formData,
+                                                                restaurant_id: selected ? selected.id : '',
+                                                                ['restaurant.name']: e.target.value
+                                                            });
+                                                        }}
+                                                        required
+                                                        value={
+                                                            formData['restaurant.name'] !== undefined
+                                                                ? formData['restaurant.name']
+                                                                : getValueByPath(item, 'restaurant.name') || ''
+                                                        }
+                                                        className="input"
+                                                        style={{ width: '100%' }}
+                                                    />
+                                                    <datalist id="restaurantes-list">
+                                                        {restaurantes.map(r => (
+                                                            <option key={r.id} value={r.name} />
+                                                        ))}
+                                                    </datalist>
+                                                </>
                                             ) : (
                                                 <input
                                                     type={field.type || 'text'}
                                                     id={String(field.key)}
                                                     name={String(field.key)}
                                                     onChange={handleInputChange}
-                                                    defaultValue={getValueByPath(item, String(field.key))}
+                                                    required={!field.type || field.type !== 'email'}
+                                                    disabled={String(field.key).includes('.')}
+                                                    value={
+                                                        formData[String(field.key)] !== undefined
+                                                            ? formData[String(field.key)]
+                                                            : getValueByPath(item, String(field.key)) || ''
+                                                    }
+                                                    className="input"
+                                                    style={{ width: '100%' }}
                                                 />
                                             )}
                                         </div>

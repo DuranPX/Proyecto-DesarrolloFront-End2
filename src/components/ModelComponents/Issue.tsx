@@ -17,7 +17,7 @@ export interface Issue extends BaseModel {
     motorcycle_id: number;
     description: string;
     issue_type: string;
-    date_reported: Date;
+    date_reported: String;
     status: string;
     created_at: Date;
     motorcycle: Motocicleta;

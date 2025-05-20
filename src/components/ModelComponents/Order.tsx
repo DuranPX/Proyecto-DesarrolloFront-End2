@@ -50,15 +50,17 @@ const OrderComponent: React.FC = () => {
     const user = useSelector((state: RootState) => state.user);
 
     // Cargar pedidos existentes del usuario
+    const fetchOrders = async () => {
+        const data = await getAllOrders(Api_Url_Orders);
+        if (user && user.id) {
+            setOrders(data.filter((order: Order) => order.customer_id === user.id));
+            console.log("Pedidos del usuario:", data.filter((order: Order) => order.customer_id === user.id));
+        } else {
+            setOrders([]);
+        }
+    };
+
     useEffect(() => {
-        const fetchOrders = async () => {
-            const data = await getAllOrders(Api_Url_Orders);
-            if (user && user.id) {
-                setOrders(data.filter((order: Order) => order.customer_id === user.id));
-            } else {
-                setOrders([]);
-            }
-        };
         fetchOrders();
     }, [user]);
 
@@ -86,6 +88,7 @@ const OrderComponent: React.FC = () => {
 
     const handleDelete = async (id: number) => {
         await deleteOrder(Api_Url_Orders, id);
+        console.log("Orden eliminada:", id);
         setOrders(prev => prev.filter(order => order.id !== id));
     };
 
@@ -113,13 +116,15 @@ const OrderComponent: React.FC = () => {
         }
         // 1. Obtén direcciones guardadas del usuario
         const res = await fetch(`http://127.0.0.1:5000/addresses?customer_id=${user.id}`);
+        console.log("Direcciones del usuario:", res);
         const direcciones = await res.json();
+        console.log("Direcciones:", direcciones);
 
         // 2. Construye las opciones para el select
         const options = direcciones.length
             ? direcciones.map((dir: any) =>
                 `<option value="${dir.id}">${dir.street}, ${dir.city}</option>`
-              ).join('') + `<option value="nueva">Ingresar nueva dirección</option>`
+            ).join('') + `<option value="nueva">Ingresar nueva dirección</option>`
             : `<option value="nueva">Ingresar nueva dirección</option>`;
 
         // 3. Muestra el Swal con el select y los inputs
@@ -137,13 +142,13 @@ const OrderComponent: React.FC = () => {
             didOpen: () => {
                 const select = document.getElementById('swal-address-select') as HTMLSelectElement;
                 const newFields = document.getElementById('swal-new-address-fields') as HTMLDivElement;
-                select?.addEventListener('change', () => {
-                    if (select.value === 'nueva') {
-                        newFields.style.display = '';
-                    } else {
-                        newFields.style.display = 'none';
-                    }
-                });
+                if (select && newFields) {
+                    // Mostrar/ocultar según la opción seleccionada al abrir
+                    newFields.style.display = select.value === 'nueva' ? '' : 'none';
+                    select.addEventListener('change', () => {
+                        newFields.style.display = select.value === 'nueva' ? '' : 'none';
+                    });
+                }
             },
             preConfirm: () => {
                 const select = document.getElementById('swal-address-select') as HTMLSelectElement;
@@ -157,7 +162,7 @@ const OrderComponent: React.FC = () => {
                         additional_info: (document.getElementById('swal-info') as HTMLInputElement).value,
                     };
                 } else {
-                    return { nueva: false, address_id: select.value };
+                    return { nueva: false, address_id: Number(select.value) }; // <-- aquí el cambio
                 }
             }
         });
@@ -176,10 +181,16 @@ const OrderComponent: React.FC = () => {
                 };
                 await createAdress(Api_Url_Adresses, addressPayload);
             } else {
-                // Solo asocia la dirección existente a la orden (si tu modelo lo permite)
-                // Si no, puedes actualizar la orden con el address_id seleccionado
-                // await updateOrder(Api_Url_Orders, orderId, { address_id: formValues.address_id });
+                const selectedAddressId = formValues.address_id;
+                // Obtener la orden actual y actualizar el campo
+                const orderRes = await fetch(`${Api_Url_Orders}/${orderId}`);
+                const currentOrder = await orderRes.json();
+                currentOrder.address = selectedAddressId;
+                console.log("Actualizando orden con dirección:", currentOrder);
+                console.log("ID de la addres:", selectedAddressId);
+                await updateOrder(Api_Url_Orders, orderId, currentOrder);
             }
+            await fetchOrders();
             Swal.fire('¡Dirección guardada y pedido realizado!', '', 'success');
             navigate('/pedidos');
         }
@@ -201,6 +212,8 @@ const OrderComponent: React.FC = () => {
             const orderObj = Array.isArray(newOrder) ? newOrder[0] : (newOrder?.data ?? newOrder);
 
             if (orderObj && orderObj.id) {
+                console.log("Orden creada:", orderObj);
+                console.log("ID de la orden:", orderObj.id);
                 await solicitarDireccion(orderObj.id);
             } else {
                 Swal.fire('Error', 'No se pudo crear la orden', 'error');
@@ -209,7 +222,7 @@ const OrderComponent: React.FC = () => {
             if (!user || !user.id) {
                 Swal.fire('Error', 'Usuario no autenticado', 'error');
                 navigate('/signin');
-            }else{
+            } else {
                 Swal.fire('Error', 'No hay menú seleccionado', 'error');
             }
         }
@@ -232,7 +245,7 @@ const OrderComponent: React.FC = () => {
             <div className="shopping-cart p-6 border rounded w-full max-w-md bg-white shadow">
                 <div className="header flex items-center gap-2 mb-4">
                     <i className="fas fa-shopping-cart text-xl"></i>
-                    <span className="font-bold">Carrito ({orders.length + (menuPreview ? 1 : 0)})</span>
+                    <span className="font-bold">Pedidos ({orders.length + (menuPreview ? 1 : 0)})</span>
                 </div>
 
                 <ul className="cart-items space-y-2">
