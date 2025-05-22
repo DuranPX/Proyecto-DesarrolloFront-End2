@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store/store";
 import { setUser } from "../../store/userSlice";
 import Swal from 'sweetalert2'; 
+import UserOne from '../../assets/images/peli.jpg';
 import { createCustomerOnLogin } from '../../services/CustomerService';
 
 interface EditFieldProps {
@@ -98,7 +99,7 @@ const UserInfo = () => {
       <div className="flex items-center space-x-5 w-full">
         <div className="relative">
           <img
-            src={user.picture || "/default-profile.png"}
+            src={user.picture || UserOne}
             alt="Foto de perfil"
             className="rounded-full w-20 h-20 object-cover border-2 border-[#111111]"
           />

@@ -1,5 +1,7 @@
 import { secureAxios } from './securityService'; // <-- usa el segurity service
 import axios from 'axios';
+import { notificationService } from './notificationService';
+
 
 const getAllModel = async (API_BASE_URL: string) => {
   try {
@@ -34,6 +36,16 @@ const getModel_OfModelById = async (API_BASE_URL: string, F_Model: string, id: n
 const createModel = async (API_BASE_URL: string, modelData: any) => {
   try {
     const response = await secureAxios.post(API_BASE_URL, modelData);
+    notificationService.pushNotification({
+      id: crypto.randomUUID(),
+      title: 'Modelo creado',
+      message: `Se creó un nuevo registro en ${API_BASE_URL}`,
+      type: 'success',
+      timestamp: new Date(),
+      read: false,
+      notificationType: 'model_created',
+      relatedData: { modelData }
+    });
     return response.data;
   } catch (error) {
     console.error('Error al crear modelo (axios):', error);
@@ -41,9 +53,21 @@ const createModel = async (API_BASE_URL: string, modelData: any) => {
   }
 };
 
+
 const updateModel = async (API_BASE_URL: string, id: number, modelData: any) => {
   try {
     const response = await secureAxios.put(`${API_BASE_URL}/${id}`, modelData);
+    notificationService.pushNotification({
+      id: crypto.randomUUID(),
+      title: 'Modelo actualizado',
+      message: `Se actualizó el modelo en ${API_BASE_URL}`,
+      type: 'info',
+      timestamp: new Date(),
+      read: false,
+      notificationType: 'model_updated',
+      relatedData: { id, modelData }
+    });
+
     return response.data;
   } catch (error) {
     console.error(`Error al actualizar modelo con ID ${id} (axios):`, error);
@@ -54,6 +78,17 @@ const updateModel = async (API_BASE_URL: string, id: number, modelData: any) => 
 const deleteModel = async (API_BASE_URL: string, id: number) => {
   try {
     const response = await secureAxios.delete(`${API_BASE_URL}/${id}`);
+    notificationService.pushNotification({
+      id: crypto.randomUUID(),
+      title: 'Modelo eliminado',
+      message: `Se elimino el modelo en ${API_BASE_URL}`,
+      type: 'info',
+      timestamp: new Date(),
+      read: false,
+      notificationType: 'model_deleted',
+      relatedData: { id }
+    });
+
     return response.data;
   } catch (error) {
     console.error(`Error al eliminar modelo con ID ${id} (axios):`, error);
