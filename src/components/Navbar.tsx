@@ -1,102 +1,59 @@
 import { useEffect, useState } from "react";
-import { IssueWithOrderData,
-        Notification, 
-        notificationService, 
-        NotificationType } from "../services/notificationService";
+import {
+    Notification,
+    notificationService,
+    NotificationType
+} from "../services/notificationService";
 import "../assets/styles/NavbarCSS.css";
 
 const Navbar = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [expandedNotification, setExpandedNotification] = useState<Notification | null>(null); 
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [expandedNotification, setExpandedNotification] = useState<Notification | null>(null);
 
     useEffect(() => {
-        // Mock de datos para pruebas (eliminar en producción)
-        const mockNotifications: Notification[] = [
-            {
-                id: 'test_1',
-                title: 'Pedido recibido',
-                message: 'Nuevo pedido de restaurante Mexicano',
-                type: 'info',
-                timestamp: new Date(),
-                read: false,
-                notificationType: 'new_order',
-                relatedData: {
-                    customer: { name: 'Juan Pérez' },
-                    menu: { restaurant: { name: 'La Mexicana' } }
-                }
-            },
-            {
-                id: 'test_2',
-                title: 'Problema reportado',
-                message: 'La moto #125 tiene fallas mecánicas',
-                type: 'error',
-                timestamp: new Date(Date.now() - 3600000), // Hace 1 hora
-                read: false,
-                notificationType: 'motorcycle_issue',
-                relatedData: {
-                    description: 'Falla en el motor',
-                    motorcycle: { plate: 'ABC-125' }
-                }
-            }
-        ];
-        setNotifications(mockNotifications);
-        setUnreadCount(mockNotifications.filter(n => !n.read).length);
+        const handler = (notif: Notification) => {
+            console.log('Nueva notificación:', notif);
+            setNotifications(prev => [notif, ...prev]);
+            setUnreadCount(prev => prev + 1);
+        };
 
-        // Conexión real solo si el backend está disponible
-        try {
-            notificationService.connect('http://127.0.0.1:5000');
-            const unsubscribe = notificationService.subscribeToNotifications((notification) => {
-                setNotifications(prev => [notification, ...prev]);
-                setUnreadCount(prev => prev + 1);
-            });
-            return () => unsubscribe();
-        } catch (error) {
-            console.warn('Modo demo: usando notificaciones mockeadas');
-        }
+
+        notificationService.subscribe(handler);
+
+        return () => {
+            notificationService.unsubscribe(); // <-- Usa la referencia del handler
+        };
     }, []);
 
-  const markAsRead = (notificationId: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
-    );
-    setUnreadCount(prev => Math.max(0, prev - 1));
-  };
+    const markAsRead = (notificationId: string) => {
+        setNotifications(prev =>
+            prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+        );
+        setUnreadCount(prev => {
+            const target = notifications.find(n => n.id === notificationId);
+            return target?.read ? prev : Math.max(0, prev - 1);
+        });
+    };
 
-  const markAllAsRead = () => {
-    notifications.forEach(notification => {
-      if (!notification.read) {
-        markAsRead(notification.id);
-      }
-    });
-  };
+    const markAllAsRead = () => {
+        const unread = notifications.filter(n => !n.read).length;
+        if (unread === 0) return;
 
-  const getNotificationIcon = (type: NotificationType) => {
-  switch (type) {
-    case 'new_order': return '🛒';
-    case 'order_cancelled': return '❌';
-    case 'motorcycle_issue': return '⚠️';
-    case 'motorcycle_moved': return '🏍️';
-    default: return '🔔';
-  }
-};
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+        setUnreadCount(0);
+    };
 
-  const getNotificationText = (notification: Notification) => {
-  switch (notification.notificationType) {
-    case 'new_order':
-      return `Nuevo pedido de ${notification.relatedData?.customer?.name || 'cliente'}`;
-    case 'order_cancelled':
-      return `Pedido cancelado #${notification.relatedData?.id || ''}`;
-    case 'motorcycle_issue':
-      const issueData = notification.relatedData as IssueWithOrderData;
-      return `Problema con moto ${issueData.motorcycle.plate}`;
-    case 'motorcycle_moved':
-      return `Moto ${notification.relatedData?.plate || ''} se movió`;
-    default:
-      return notification.message;
-  }
-};
+    const getNotificationIcon = (type: NotificationType) => {
+        switch (type) {
+            case 'new_order': return '🛒';
+            case 'order_cancelled': return '❌';
+            case 'motorcycle_issue': return '⚠️';
+            case 'motorcycle_moved': return '🏍️';
+            default: return '🔔';
+        }
+    };
 
     return (
         <nav className="relative">
@@ -166,7 +123,6 @@ const Navbar = () => {
                                                     {notification.title}
                                                 </div>
                                                 <div className="text-sm text-gray-600 truncate">
-                                                    {getNotificationText(notification)}
                                                 </div>
                                                 <div className="text-xs text-gray-400 mt-1">
                                                     {new Date(notification.timestamp).toLocaleString()}
@@ -199,23 +155,93 @@ const Navbar = () => {
                                                 <div className="col-span-1 font-semibold text-gray-500">Estado:</div>
                                                 <div className="col-span-2">
                                                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${notification.read
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-blue-100 text-blue-800'
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : 'bg-blue-100 text-blue-800'
                                                         }`}>
                                                         {notification.read ? 'Leída' : 'No leída'}
                                                     </span>
                                                 </div>
 
-                                                {notification.relatedData && (
-                                                    <>
-                                                        <div className="col-span-3 font-semibold text-gray-500 mt-2">Detalles:</div>
-                                                        <div className="col-span-3">
-                                                            <pre className="text-xs p-2 bg-gray-50 rounded-md overflow-x-auto">
-                                                                {JSON.stringify(notification.relatedData, null, 2)}
-                                                            </pre>
-                                                        </div>
-                                                    </>
-                                                )}
+                                                <>
+                                                    {notification.notificationType === 'new_order' && (
+                                                        <>
+                                                            {notification.relatedData.customer?.name && (
+                                                                <div>
+                                                                    <strong>Cliente:</strong> {notification.relatedData.customer.name}
+                                                                </div>
+                                                            )}
+                                                            {notification.relatedData.menu?.restaurant?.name && (
+                                                                <div>
+                                                                    <strong>Restaurante:</strong> {notification.relatedData.menu.restaurant.name}
+                                                                </div>
+                                                            )}
+                                                        </>
+                                                    )}
+
+                                                    {notification.notificationType === 'order_cancelled' && (
+                                                        <>
+                                                            {notification.relatedData.reason && (
+                                                                <div>
+                                                                    <strong>Razón:</strong> {notification.relatedData.reason}
+                                                                </div>
+                                                            )}
+                                                            {notification.relatedData.orderId && (
+                                                                <div>
+                                                                    <strong>ID de orden:</strong> {notification.relatedData.orderId}
+                                                                </div>
+                                                            )}
+                                                        </>
+                                                    )}
+
+                                                    {notification.notificationType === 'motorcycle_moved' && (
+                                                        <>
+                                                            <div>
+                                                                <strong>Moto:</strong>{' '}
+                                                                {notification.relatedData.motorcycle?.plate || notification.relatedData.plate || 'Desconocida'}
+                                                            </div>
+                                                            {notification.relatedData.description && (
+                                                                <div>
+                                                                    <strong>Descripción:</strong> {notification.relatedData.description}
+                                                                </div>
+                                                            )}
+                                                        </>
+                                                    )}
+
+                                                    {notification.notificationType === 'motorcycle_issue' && (
+                                                        <>
+                                                            <div>
+                                                                <strong>Moto:</strong>{' '}
+                                                                {notification.relatedData.motorcycle?.plate || notification.relatedData.plate || 'Desconocida'}
+                                                            </div>
+                                                            {notification.relatedData.issue && (
+                                                                <div>
+                                                                    <strong>Problema:</strong> {notification.relatedData.issue}
+                                                                </div>
+                                                            )}
+                                                            {notification.relatedData.description && (
+                                                                <div>
+                                                                    <strong>Descripción:</strong> {notification.relatedData.description}
+                                                                </div>
+                                                            )}
+                                                        </>
+                                                    )}
+
+                                                    {['model_created', 'model_updated', 'model_deleted'].includes(notification.notificationType) && (
+                                                        <>
+                                                            {notification.relatedData.modelData ? (
+                                                                Object.entries(notification.relatedData.modelData).map(([key, value]) => (
+                                                                    <div key={key}>
+                                                                        <strong className="capitalize">{key.replace(/_/g, ' ')}:</strong> {String(value)}
+                                                                    </div>
+                                                                ))
+                                                            ) : (
+                                                                <div className="text-gray-500">Sin detalles del modelo.</div>
+                                                            )}
+                                                        </>
+                                                    )}
+                                                </>
+
+
                                             </div>
 
                                             <div className="flex justify-end gap-2 mt-2">
