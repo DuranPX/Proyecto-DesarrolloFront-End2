@@ -62,7 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                     <ul className="space-y-2">
                         <li>
                             <Link
-                                to="/Analisis-Graficos"
+                                to="/"
                                 onClick={() => setSidebarOpen(false)}
                                 className="block px-3 py-2 rounded-lg text-white font-medium hover:bg-[#1a1a1a]"
                             >
