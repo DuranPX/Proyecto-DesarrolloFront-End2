@@ -5,6 +5,7 @@ import {
     NotificationType
 } from "../services/notificationService";
 import "../assets/styles/NavbarCSS.css";
+import audioFile from "../assets/livechat-129007.mp3";
 
 const Navbar = () => {
     const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -15,6 +16,8 @@ const Navbar = () => {
     useEffect(() => {
         const handler = (notif: Notification) => {
             console.log('Nueva notificación:', notif);
+            const audio = new Audio(audioFile);
+            audio.play();
             setNotifications(prev => [notif, ...prev]);
             setUnreadCount(prev => prev + 1);
         };
