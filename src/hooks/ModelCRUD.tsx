@@ -22,8 +22,8 @@ interface ModelCrudProps<T extends BaseModel> {
     auxData: string | null;
     productos?: { id: number; name: string }[];
     restaurantes?: { id: number; name: string }[];
-    clientes?: { id: number; name: string }[];
     conductores?: { id: number; name: string }[];
+    motocicletas?: { id: number; license_plate: string }[];
 }
 
 const ModelCrudComponent = <T extends BaseModel,>({
@@ -40,8 +40,8 @@ const ModelCrudComponent = <T extends BaseModel,>({
     auxData,
     productos,
     restaurantes,
-    clientes,
     conductores,
+    motocicletas,
 }: ModelCrudProps<T>) => {
     const [items, setItems] = useState<T[]>([]);
     const [loading, setLoading] = useState(false);
@@ -82,7 +82,6 @@ const ModelCrudComponent = <T extends BaseModel,>({
             console.log("Form Data a Enviar:", dataToSend);
             const result = await createData(apiUrl, dataToSend);
 
-            // separamos la respuesta del backend (201)
             const newItem = Array.isArray(result) ? result[0] : result;
 
             setItems(prevItems => [...prevItems, newItem]);
@@ -97,7 +96,6 @@ const ModelCrudComponent = <T extends BaseModel,>({
             setLoading(false);
         }
     };
-
 
     const handleUpdate = async () => {
         if (actualizarId === null) return;
@@ -160,11 +158,9 @@ const ModelCrudComponent = <T extends BaseModel,>({
                     .filter(([key]) => key !== 'id')
                     .map(([key, value]) => {
                         if (typeof value === 'object' && value !== null) {
-                            // Si el objeto tiene 'name', muestra solo el name
                             if ('name' in value) {
                                 return `<strong>${key}:</strong> ${value.name}<br/>`;
                             }
-                            // Si no, muestra sus propiedades principales
                             const subfields = Object.entries(value)
                                 .filter(([k]) => typeof value[k] !== 'object')
                                 .map(([k, v]) => `<em>${k}:</em> ${v}`)
@@ -201,8 +197,8 @@ const ModelCrudComponent = <T extends BaseModel,>({
 
     return (
         <>
-            {loading && <div>Cargando Restaurantes...</div>}
-            {error && <div style={{ color: 'red' }}>Error al cargar Restaurantes: {error}</div>}
+            {loading && <div>Cargando {modelNamePlural}...</div>}
+            {error && <div style={{ color: 'red' }}>Error al cargar {modelNamePlural}: {error}</div>}
             <div className="model-crud-container">
                 <h1>{modelNamePlural}</h1>
 
@@ -234,7 +230,7 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                             name={String(field.key)}
                                             onChange={handleInputChange}
                                             checked={formData[String(field.key)] || false}
-                                            className="input" // <-- Aplica tu clase aquí
+                                            className="input"
                                         />
                                     ) : String(field.key) === 'product.name' && productos ? (
                                         <>
@@ -252,8 +248,8 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                                 }}
                                                 required
                                                 value={formData['product.name'] || ''}
-                                                className="input" // <-- Aplica tu clase aquí
-                                                style={{ width: '100%' }} // Opcional, para igualar tamaño
+                                                className="input"
+                                                style={{ width: '100%' }}
                                             />
                                             <datalist id="productos-list">
                                                 {productos.map(p => (
@@ -271,7 +267,7 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                                     const selected = restaurantes.find(r => r.name === e.target.value);
                                                     setFormData({
                                                         ...formData,
-                                                        restaurant_id: selected ? selected.id : '', // <-- Esto asegura que se guarde el id correcto
+                                                        restaurant_id: selected ? selected.id : '',
                                                         ['restaurant.name']: e.target.value
                                                     });
                                                 }}
@@ -286,6 +282,56 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                                 ))}
                                             </datalist>
                                         </>
+                                    ) : String(field.key) === 'driver.name' && conductores ? (
+                                        <>
+                                            <input
+                                                list="conductores-list"
+                                                id="driver_name"
+                                                name="driver_name"
+                                                onChange={e => {
+                                                    const selected = conductores.find(d => d.name === e.target.value);
+                                                    setFormData({
+                                                        ...formData,
+                                                        driver_id: selected ? selected.id : '',
+                                                        ['driver.name']: e.target.value
+                                                    });
+                                                }}
+                                                required
+                                                value={formData['driver.name'] || ''}
+                                                className="input"
+                                                style={{ width: '100%' }}
+                                            />
+                                            <datalist id="conductores-list">
+                                                {conductores.map(d => (
+                                                    <option key={d.id} value={d.name} />
+                                                ))}
+                                            </datalist>
+                                        </>
+                                    ) : String(field.key) === 'motorcycle.license_plate' && motocicletas ? (
+                                        <>
+                                            <input
+                                                list="motocicletas-list"
+                                                id="motorcycle_plate"
+                                                name="motorcycle_plate"
+                                                onChange={e => {
+                                                    const selected = motocicletas.find(m => m.license_plate === e.target.value);
+                                                    setFormData({
+                                                        ...formData,
+                                                        motorcycle_id: selected ? selected.id : '',
+                                                        ['motorcycle.license_plate']: e.target.value
+                                                    });
+                                                }}
+                                                required
+                                                value={formData['motorcycle.license_plate'] || ''}
+                                                className="input"
+                                                style={{ width: '100%' }}
+                                            />
+                                            <datalist id="motocicletas-list">
+                                                {motocicletas.map(m => (
+                                                    <option key={m.id} value={m.license_plate} />
+                                                ))}
+                                            </datalist>
+                                        </>
                                     ) : (
                                         <input
                                             type={field.type || 'text'}
@@ -295,8 +341,8 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                             required={!field.type || field.type !== 'email'}
                                             disabled={String(field.key).includes('.')}
                                             value={formData[String(field.key)] || ''}
-                                            className="input" // <-- Aplica tu clase aquí
-                                            style={{ width: '100%' }} // Opcional, para igualar tamaño
+                                            className="input"
+                                            style={{ width: '100%' }}
                                         />
                                     )}
                                 </div>
@@ -306,6 +352,7 @@ const ModelCrudComponent = <T extends BaseModel,>({
                         <button type="button" onClick={() => setCrear(false)}>Cancelar</button>
                     </form>
                 )}
+
                 {actualizarId !== null && (
                     <form onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
                         <h2>Actualizar {modelNameSingular}</h2>
@@ -327,7 +374,7 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                             ) : String(field.key) === 'product.name' && productos ? (
                                                 <>
                                                     <input
-                                                        list="productos-list"
+                                                        list="productos-list-update"
                                                         id="product_name_update"
                                                         name="product_name"
                                                         onChange={e => {
@@ -347,7 +394,7 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                                         className="input"
                                                         style={{ width: '100%' }}
                                                     />
-                                                    <datalist id="productos-list">
+                                                    <datalist id="productos-list-update">
                                                         {productos.map(p => (
                                                             <option key={p.id} value={p.name} />
                                                         ))}
@@ -356,7 +403,7 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                             ) : String(field.key) === 'restaurant.name' && restaurantes ? (
                                                 <>
                                                     <input
-                                                        list="restaurantes-list"
+                                                        list="restaurantes-list-update"
                                                         id="restaurant_name_update"
                                                         name="restaurant_name"
                                                         onChange={e => {
@@ -376,9 +423,67 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                                         className="input"
                                                         style={{ width: '100%' }}
                                                     />
-                                                    <datalist id="restaurantes-list">
+                                                    <datalist id="restaurantes-list-update">
                                                         {restaurantes.map(r => (
                                                             <option key={r.id} value={r.name} />
+                                                        ))}
+                                                    </datalist>
+                                                </>
+                                            ) : String(field.key) === 'driver.name' && conductores ? (
+                                                <>
+                                                    <input
+                                                        list="conductores-list-update"
+                                                        id="driver_name_update"
+                                                        name="driver_name"
+                                                        onChange={e => {
+                                                            const selected = conductores.find(d => d.name === e.target.value);
+                                                            setFormData({
+                                                                ...formData,
+                                                                driver_id: selected ? selected.id : '',
+                                                                ['driver.name']: e.target.value
+                                                            });
+                                                        }}
+                                                        required
+                                                        value={
+                                                            formData['driver.name'] !== undefined
+                                                                ? formData['driver.name']
+                                                                : getValueByPath(item, 'driver.name') || ''
+                                                        }
+                                                        className="input"
+                                                        style={{ width: '100%' }}
+                                                    />
+                                                    <datalist id="conductores-list-update">
+                                                        {conductores.map(d => (
+                                                            <option key={d.id} value={d.name} />
+                                                        ))}
+                                                    </datalist>
+                                                </>
+                                            ) : String(field.key) === 'motorcycle.license_plate' && motocicletas ? (
+                                                <>
+                                                    <input
+                                                        list="motocicletas-list-update"
+                                                        id="motorcycle_plate_update"
+                                                        name="motorcycle_plate"
+                                                        onChange={e => {
+                                                            const selected = motocicletas.find(m => m.license_plate === e.target.value);
+                                                            setFormData({
+                                                                ...formData,
+                                                                motorcycle_id: selected ? selected.id : '',
+                                                                ['motorcycle.license_plate']: e.target.value
+                                                            });
+                                                        }}
+                                                        required
+                                                        value={
+                                                            formData['motorcycle.license_plate'] !== undefined
+                                                                ? formData['motorcycle.license_plate']
+                                                                : getValueByPath(item, 'motorcycle.license_plate') || ''
+                                                        }
+                                                        className="input"
+                                                        style={{ width: '100%' }}
+                                                    />
+                                                    <datalist id="motocicletas-list-update">
+                                                        {motocicletas.map(m => (
+                                                            <option key={m.id} value={m.license_plate} />
                                                         ))}
                                                     </datalist>
                                                 </>
@@ -411,9 +516,8 @@ const ModelCrudComponent = <T extends BaseModel,>({
 
                 <div className="card-grid">
                     {items.map(item => {
-                        const nameField = modelFields[0]; // Se asume que el primer campo es el nombre
+                        const nameField = modelFields[0];
                         const ContextField = modelFields[1];
-                        console.log(ContextField) // se asume que el segundo es la indicacion por si hace click en el modelo
                         const redirectUrl = redirectUrlBuilder
                             ? redirectUrlBuilder(item)
                             : '/';
@@ -438,7 +542,7 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                         )
                                     ))}
                                     <button
-                                        key={`update-${item.id}`} // Agregar clave única a los botones
+                                        key={`update-${item.id}`}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             e.preventDefault();
@@ -448,7 +552,7 @@ const ModelCrudComponent = <T extends BaseModel,>({
                                         Actualizar
                                     </button>
                                     <button
-                                        key={`delete-${item.id}`} // Agregar clave única a los botones
+                                        key={`delete-${item.id}`}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             e.preventDefault();

@@ -7,6 +7,7 @@ import type { AppDispatch } from '../../store/store';
 import { setUser } from '../../store/userSlice';
 import { createCustomerOnLogin } from '../../services/CustomerService';
 import { hasRequiredUserData } from '../../services/CustomerService';
+import "../../assets/styles/SignInCSS.css";
 
 interface OauthJwtPayload {
   name: string;

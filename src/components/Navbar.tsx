@@ -199,9 +199,11 @@ const Navbar = () => {
                                                                 <strong>Moto:</strong>{' '}
                                                                 {notification.relatedData.motorcycle?.plate || notification.relatedData.plate || 'Desconocida'}
                                                             </div>
-                                                            {notification.relatedData.description && (
+                                                            {notification.relatedData.position && (
                                                                 <div>
-                                                                    <strong>Descripción:</strong> {notification.relatedData.description}
+                                                                    <strong>Coordenadas:</strong>{' '}
+                                                                    <strong>Lat: </strong>{notification.relatedData.position?.lat || 'Desconocida'}{' '}
+                                                                    <strong>Lng: </strong>{notification.relatedData.position?.lng || 'Desconocida'}
                                                                 </div>
                                                             )}
                                                         </>
