@@ -530,51 +530,75 @@ const ModelCrudComponent = <T extends BaseModel,>({
                             </div>
 
                             <div className="card-hover">
-                            {modelFields.map((field, index) => {
-                                const value = String(getValueByPath(item, String(field.key)));
-                                const isImage = /\.(jpeg|jpg|gif|png|webp|svg)$/i.test(value);
+                                {modelFields.map((field, index) => {
+                                    const rawValue = getValueByPath(item, String(field.key));
 
-                                // 👉 URL base de imágenes (ajústala según tu servidor)
-                                const IMAGE_BASE_URL = 'http://localhost:5000/uploads/';
-                                const imageUrl = isImage ? `${IMAGE_BASE_URL}${value}` : '';
+                                    // 👉 Si es un arreglo de fotos
+                                    if (Array.isArray(rawValue) && field.key === 'photos') {
+                                        return (
+                                            <div key={`${item.id}-${String(field.key)}-${index}`}>
+                                                <strong>{field.label}:</strong>
+                                                <div className="flex gap-2 mt-1 flex-wrap">
+                                                    {rawValue.map((photo: any) => (
+                                                        <img
+                                                            key={photo.id}
+                                                            src={photo.image_url}
+                                                            alt={photo.caption || 'Foto'}
+                                                            className="w-32 h-auto rounded"
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        );
+                                    }
 
-                                return field.label && (
-                                <div key={`${item.id}-${String(field.key)}-${index}`}>
-                                    <strong>{field.label}:</strong>{' '}
-                                    {isImage ? (
-                                    <img
-                                        src={imageUrl}
-                                        alt={field.label}
-                                        className="w-32 h-auto rounded mt-1"
-                                    />
-                                    ) : (
-                                    value
-                                    )}
-                                </div>
-                                );
-                            })}
+                                    // 👇 Si es texto o una imagen individual
+                                    const value = String(rawValue);
+                                    const isImage = /\.(jpeg|jpg|gif|png|webp|svg)$/i.test(value);
+                                    const imageUrl = isImage
+                                        ? value.startsWith('http')
+                                            ? value
+                                            : `http://localhost:5000/uploads/${value}`
+                                        : '';
 
-                            <button
-                                key={`update-${item.id}`}
-                                onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                setActualizarId(item.id);
-                                }}
-                            >
-                                Actualizar
-                            </button>
-                            <button
-                                key={`delete-${item.id}`}
-                                onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                handleDelete(item.id);
-                                }}
-                            >
-                                Borrar
-                            </button>
+                                    return field.label && (
+                                        <div key={`${item.id}-${String(field.key)}-${index}`}>
+                                            <strong>{field.label}:</strong>{' '}
+                                            {isImage ? (
+                                                <img
+                                                    src={imageUrl}
+                                                    alt={field.label}
+                                                    className="w-32 h-auto rounded mt-1"
+                                                />
+                                            ) : (
+                                                value
+                                            )}
+                                        </div>
+                                    );
+                                })}
+
+                                <button
+                                    key={`update-${item.id}`}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        setActualizarId(item.id);
+                                    }}
+                                >
+                                    Actualizar
+                                </button>
+                                <button
+                                    key={`delete-${item.id}`}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        handleDelete(item.id);
+                                    }}
+                                >
+                                    Borrar
+                                </button>
                             </div>
+
                         </Link>
                         );
                     })}

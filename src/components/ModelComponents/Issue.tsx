@@ -28,12 +28,12 @@ const Api_Url_Issues = "http://127.0.0.1:5000/issues";
 
 const IssueComponent: React.FC = () => {
     const issueFields = [
-        { label: 'ID', key: 'id' as keyof Issue },
-        { label: 'ID de la motocicleta', key: 'motorcycle_id' as keyof Issue },
+
         { label: 'Descripción', key: 'description' as keyof Issue },
         { label: 'Tipo de problema', key: 'issue_type' as keyof Issue },
         { label: 'Fecha reportada', key: 'date_reported' as keyof Issue },
         { label: 'Estado', key: 'status' as keyof Issue },
+        { label: 'Imagen', key: 'photos' as keyof Issue },
         { label: 'Creado el', key: 'created_at' as keyof Issue }
     ];
 
