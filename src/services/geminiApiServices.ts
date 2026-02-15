@@ -1,7 +1,7 @@
 // src/api/gemini.ts
 import axios from "axios";
 
-const GEMINI_API_KEY = "AIzaSyDdTeGsVXMzH4G1iNupo_UBHI0K4UaCG3o"; 
+
 
 const geminiApi = axios.create({
   baseURL: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
