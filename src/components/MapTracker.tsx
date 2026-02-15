@@ -24,7 +24,7 @@ const MapTracker: React.FC = () => {
   const [simulationInterval, setSimulationInterval] = useState<NodeJS.Timeout | null>(null);
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyCMSVq50i4aR5gAalGYutE53CYojPBCd4U',
+    googleMapsApiKey: '',
     libraries: ['places', 'geometry'],
   });
 
