@@ -22,17 +22,7 @@ main_bp = Blueprint('main', __name__)
 ##import de github route
 load_dotenv()
 
-CLIENT_ID_GITHUB = os.environ.get('GITHUB_CLIENT_ID')
-CLIENT_SECRET_GITHUB = os.environ.get('GITHUB_CLIENT_SECRET')
-GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
-GITHUB_USER_URL = "https://api.github.com/user"
 
-##env microsoft
-MICROSOFT_TOKEN_URL = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
-MICROSOFT_USER_URL = "https://graph.microsoft.com/v1.0/me"
-MICROSOFT_CLIENT_ID = "ade20827-082b-4aa1-82c1-541e776fb3c1"
-MICROSOFT_CLIENT_SECRET = "98bbc321-c39d-4fc2-ad62-05d458e69455"
-MICROSOFT_REDIRECT_URI = "http://localhost:5173/signin"
 
 # Microsoft Route
 @main_bp.route('/microsoft', methods=['POST'])
